@@ -1,0 +1,13 @@
+
+/.gradle/
+/.idea/
+/build/
+.gradle/
+.idea/
+.idea/*.xml
+build.gradle
+build/
+gradle/
+gradlew
+gradlew.bat
+ticktok-java-client.iml
