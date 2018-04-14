@@ -14,6 +14,7 @@ import static org.hamcrest.core.Is.is;
 public class TicktokTest {
 
     private static final String TICKTOK_SERVICE_DOMAIN = "http://localhost:9999";
+    public static final String EVERY_5_SECONDS = "every.5.seconds";
     private TicktockServiceStub ticktockServiceStub;
     private static final String TOKEN = "Bfmx3Z7y9GxY4yLrKP";
 
@@ -24,7 +25,7 @@ public class TicktokTest {
 
     @Test
     public void shouldRegisterNewClock() throws IOException {
-        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock("every.5.seconds");
+        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS);
         assertThat(ticktockServiceStub.getToken(), is(TOKEN));
         assertThat(ticktockServiceStub.getBody(), is(expectedBody()));
     }
