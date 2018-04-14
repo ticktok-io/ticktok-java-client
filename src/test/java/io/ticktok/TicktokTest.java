@@ -11,8 +11,9 @@ import java.io.IOException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class TicktokClientTest {
+public class TicktokTest {
 
+    private static final String TICKTOK_SERVICE_DOMAIN = "http://localhost:9999";
     private TicktockServiceStub ticktockServiceStub;
     private static final String TOKEN = "Bfmx3Z7y9GxY4yLrKP";
 
@@ -23,13 +24,13 @@ public class TicktokClientTest {
 
     @Test
     public void shouldRegisterNewClock() throws IOException {
-        new TicktokClient(TOKEN).registerClock("every.5.seconds", "ticktok");
+        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock("every.5.seconds");
         assertThat(ticktockServiceStub.getToken(), is(TOKEN));
         assertThat(ticktockServiceStub.getBody(), is(expectedBody()));
     }
 
     private String expectedBody() {
-        return new Gson().toJson(new RegisterClockRequest("ticktok", "every.5.seconds"));
+        return new Gson().toJson(new RegisterClockRequest("every.5.seconds"));
     }
 
 }

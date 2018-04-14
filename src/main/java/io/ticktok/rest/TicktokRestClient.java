@@ -1,5 +1,6 @@
 package io.ticktok.rest;
 
+import io.ticktok.TicktokOptions;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -13,11 +14,13 @@ import org.apache.http.message.BasicHeader;
 import java.io.IOException;
 
 public class TicktokRestClient {
+    private final String token;
     private HttpClient client;
     private final String domain;
 
-    public TicktokRestClient(String domain){
-        this.domain = domain;
+    public TicktokRestClient(TicktokOptions options){
+        this.domain = options.getDomain();
+        this.token = options.getToken();
         this.client = HttpClientBuilder.create().build();
     }
 
@@ -29,7 +32,7 @@ public class TicktokRestClient {
         validateResponseWasOk(response);
     }
 
-    public void persistEntry(String entry, String entryDomain) throws IOException {
+    public void post(String entry, String entryDomain) throws IOException {
         handleBodyCall(new HttpPost(this.domain + "/" + entryDomain), entry);
     }
 
@@ -37,7 +40,7 @@ public class TicktokRestClient {
         return new BasicHeader[]{
                 new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
                 new BasicHeader(HttpHeaders.ACCEPT, "application/json"),
-                new BasicHeader(HttpHeaders.AUTHORIZATION, "Bfmx3Z7y9GxY4yLrKP")
+                new BasicHeader(HttpHeaders.AUTHORIZATION, this.token)
         };
     }
 

@@ -1,4 +1,4 @@
-package io.ticktok.register;
+package io.ticktok;
 
 import lombok.*;
 
@@ -9,6 +9,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class RegisterClockRequest {
-    private String schedule;
+public class TicktokOptions {
+    private String domain;
+    private String token;
 }
