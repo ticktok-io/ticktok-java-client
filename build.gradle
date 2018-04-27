@@ -13,8 +13,10 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
+apply plugin: 'maven'
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "http://dl.bintray.com/rockem/maven" }
 }
@@ -34,6 +36,29 @@ dependencies {
     testCompile 'org.rockem:blink-http:0.5'
     testCompile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testCompile "junit:junit:4.12"
+}
+
+task createPom << {
+    pom {
+        project {
+            groupId 'io.ticktok'
+            artifactId 'ticktok-java-client'
+            version '0.1.0'
+
+            inceptionYear '2018'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }.writeTo("pom.xml")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
 }
 
 compileKotlin {
