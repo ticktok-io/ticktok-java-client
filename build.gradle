@@ -1,74 +1,83 @@
 buildscript {
-    ext.kotlin_version = '1.2.30'
-
     repositories {
-        mavenCentral()
+        jcenter()
     }
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.7"
 }
 
 apply plugin: 'java'
-apply plugin: 'kotlin'
 apply plugin: 'idea'
-apply plugin: 'maven-publish'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "http://dl.bintray.com/rockem/maven" }
-}
-
-jar {
-    baseName = 'ticktok-client'
-    version =  '0.1.0'
-}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+group = 'io.ticktok'
+version = '0.1.0'
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url "http://dl.bintray.com/rockem/maven" }
+}
+
+
 dependencies {
+    compileOnly "org.projectlombok:lombok:1.16.4"
+
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.4'
     compile "com.google.code.gson:gson:2.7"
-    compile "org.projectlombok:lombok:1.16.4"
+
     testCompile 'org.rockem:blink-http:0.5'
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testCompile "junit:junit:4.12"
 }
 
-task createPom << {
-    pom {
-        project {
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
             groupId 'io.ticktok'
             artifactId 'ticktok-java-client'
             version '0.1.0'
-
-            inceptionYear '2018'
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
         }
-    }.writeTo("pom.xml")
+    }
 }
+
+Properties properties = new Properties()
+File propFile = "${System.properties['user.home']}${File.separator}.gradle${File.separator}bintray.properties" as File
+properties.load(propFile.newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    publications = ['MyPublication']
+    pkg {
+        repo = 'maven'
+        name = 'ticktok-java-client'
+        userOrg = 'ticktok-io'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/ticktok-io/ticktok-java-client.git'
+        labels = ['java', 'ticktok']
+        publicDownloadNumbers = true
+        version {
+            name = '0.1.0'
+            desc = ''
+            vcsTag = ''
+            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+}
+
+
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '4.7'
 }
 
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
+
 
