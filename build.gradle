@@ -1,5 +1,7 @@
 buildscript {
     repositories {
+        mavenLocal()
+        mavenCentral()
         jcenter()
     }
 }
@@ -21,11 +23,27 @@ group = 'io.ticktok'
 version = '0.1.0'
 
 repositories {
-    jcenter()
+    mavenLocal()
     mavenCentral()
+    jcenter()
     maven { url "http://dl.bintray.com/rockem/maven" }
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
 
 dependencies {
     compileOnly "org.projectlombok:lombok:1.16.4"
@@ -37,43 +55,70 @@ dependencies {
     testCompile "junit:junit:4.12"
 }
 
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "amaziagur"
+            name "amazia gur"
+            email "amaziagur@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/ticktok-io/ticktok-java-client"
+    }
+}
+
 publishing {
     publications {
-        MyPublication(MavenPublication) {
+        mavenPublication(MavenPublication) {
             from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
             groupId 'io.ticktok'
             artifactId 'ticktok-java-client'
-            version '0.1.0'
+            version '1.0.0'
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'An AWESOME lib. Really!')
+                root.appendNode('name', 'ticktok java client')
+                root.appendNode('url', 'https://github.com/ticktok-io/ticktok-java-client')
+                root.children().last() + pomConfig
+            }
         }
     }
 }
 
-Properties properties = new Properties()
-File propFile = "${System.properties['user.home']}${File.separator}.gradle${File.separator}bintray.properties" as File
-properties.load(propFile.newDataInputStream())
-
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-    publications = ['MyPublication']
+    user = System.getProperty('bintray.user')
+    key = System.getProperty('bintray.key')
+    publications = ['mavenPublication']
+
     pkg {
         repo = 'maven'
         name = 'ticktok-java-client'
         userOrg = 'ticktok-io'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/ticktok-io/ticktok-java-client.git'
-        labels = ['java', 'ticktok']
-        publicDownloadNumbers = true
         version {
-            name = '0.1.0'
-            desc = ''
-            vcsTag = ''
-            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+            name = '1.0.0'
+            desc = '1.0.0'
+            released  = new Date()
         }
     }
+
 }
-
-
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.7'
