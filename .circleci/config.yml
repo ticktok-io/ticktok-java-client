@@ -14,7 +14,7 @@ jobs:
       - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
           key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
-      - run: mvn dependency:go-offline # gets the project dependencies
+      - run: mvn dependency:go-offline -Dversion=0.0.0 # gets the project dependencies
 
       - save_cache: # saves the project dependencies
           paths:
