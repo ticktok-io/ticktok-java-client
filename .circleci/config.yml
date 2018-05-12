@@ -10,21 +10,18 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
 
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          - v1-dependencies-
+      - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
+          key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
-      - run: ./gradlew dependencies
+      - run: mvn dependency:go-offline # gets the project dependencies
 
-      - save_cache:
+      - save_cache: # saves the project dependencies
           paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+            - ~/.m2
+          key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
-      - run: ./gradlew build
+      - run: mvn package # run the actual tests
 
       - run:
           name: destribute to jcneter
