@@ -21,7 +21,7 @@ jobs:
             - ~/.m2
           key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
-      - run: mvn -s settings.xml test
+      - run: mvn -s settings.xml package
 
       - run:
           name: destribute to jcneter
