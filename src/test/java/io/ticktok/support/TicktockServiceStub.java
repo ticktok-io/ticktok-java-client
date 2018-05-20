@@ -1,46 +1,42 @@
 package io.ticktok.support;
 
+import com.google.gson.Gson;
+import io.ticktok.register.Clock;
+import org.rockm.blink.BlinkRequest;
 import org.rockm.blink.BlinkServer;
 
 import java.io.IOException;
 
 public class TicktockServiceStub {
 
-    private ClockRequest clockRequest;
-
     public TicktockServiceStub(int port) throws IOException {
 
         new BlinkServer(port) {{
             post("/api/v1/clocks", (req, res) ->
-                    clockRequest = new ClockRequest(req.body(), req.header("Authorization"))
+                    returnClock(req)
             );
-        }};
-    }
+        }
 
+            private String returnClock(BlinkRequest req) {
+                return new Gson().toJson(new Clock().builder().
+                        id("123").
+                        schedule(extractBody(req)).
+                        url("yourQueueUrl").
+                        build());
+            }
 
-    public String getBody(){
-        return this.clockRequest.body;
-    }
-
-    public String getToken(){
-        return this.clockRequest.token;
+            private String extractBody(BlinkRequest req) {
+                return new Gson().fromJson(req.body(), ClockRequest.class).schedule;
+            }
+        };
     }
 
     private class ClockRequest{
-        private String body = "";
-        private String token = "";
+        private String schedule = "";
 
-        public ClockRequest(String body, String token){
-            this.body = body;
-            this.token = token;
+        public ClockRequest(String schedule){
+            this.schedule = schedule;
         }
 
-        public String getBody(){
-            return this.body;
-        }
-
-        public String getToken(){
-            return this.token;
-        }
     }
 }
