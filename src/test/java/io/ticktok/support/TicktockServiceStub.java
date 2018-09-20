@@ -58,4 +58,8 @@ public class TicktockServiceStub {
             this.schedule = schedule;
         }
     }
+
+    public void stop() {
+        ticktokService.stop();
+    }
 }
