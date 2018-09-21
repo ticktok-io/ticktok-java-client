@@ -41,17 +41,17 @@ public class TicktokTest {
     }
 
     @Test
-    public void invokeOnTick() throws IOException {
+    public void invokeOnTick() throws IOException, InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         Clock clock = new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, countDownLatch::countDown);
-        assert countDownLatch.getCount() == 1;
+        verifyCallbackWasntDoneSynchronicity(countDownLatch);
         qClient.publishTick(clock.getClockChannel().getExchange());
-        try {
-            countDownLatch.await(3, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        countDownLatch.await(3, TimeUnit.SECONDS);
         // pass
+    }
+
+    private void verifyCallbackWasntDoneSynchronicity(CountDownLatch countDownLatch) {
+        assert countDownLatch.getCount() == 1;
     }
 
     @After
