@@ -1,7 +1,6 @@
 package io.ticktok;
 
-import io.ticktok.register.Clock;
-import io.ticktok.support.QueueClient;
+import io.ticktok.support.TickPublisher;
 import io.ticktok.support.TicktockServiceStub;
 import org.junit.After;
 import org.junit.Before;
@@ -9,44 +8,41 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import static io.ticktok.support.TicktockServiceStub.TICKTOK_SERVICE_DOMAIN;
+import static io.ticktok.support.TicktockServiceStub.TOKEN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class TicktokTest {
 
-    private static final String TICKTOK_SERVICE_DOMAIN = "http://localhost:9999";
     private static final String EVERY_5_SECONDS = "every.5.seconds";
-    private static final String TOKEN = "Bfmx3Z7y9GxY4yLrKP";
     private TicktockServiceStub ticktockServiceStub;
-    private QueueClient qClient;
 
     @Before
     public void init() throws IOException {
-        qClient = new QueueClient();
         ticktockServiceStub = new TicktockServiceStub(9999);
     }
 
     @Test
     public void registerNewClock() throws IOException {
         // TODO - TicktokOptions should be builder
-        tick();
+        register(() -> {}); // schedule
         assertThat(ticktockServiceStub.lastClockRequest.schedule, is(EVERY_5_SECONDS));
     }
 
-    private void tick() throws IOException {
-        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, () -> {});
+    private void register(Runnable runnable) throws IOException {
+        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, runnable);
     }
 
     @Test
-    public void invokeOnTick() throws IOException, InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        Clock clock = new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, countDownLatch::countDown);
-        verifyCallbackWasntDoneSynchronicity(countDownLatch);
-        qClient.publishTick(clock.getClockChannel().getExchange());
-        countDownLatch.await(3, TimeUnit.SECONDS);
+    public void invokeOnTick() throws Exception {
+        CountDownLatch waitForTickLatch = new CountDownLatch(1);
+        register(waitForTickLatch::countDown);
+        verifyCallbackWasntDoneSynchronicity(waitForTickLatch);
+        TickPublisher.publish();
+        waitForTickLatch.await(3, TimeUnit.SECONDS);
         // pass
     }
 

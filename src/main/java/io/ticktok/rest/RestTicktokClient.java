@@ -1,6 +1,10 @@
 package io.ticktok.rest;
 
+import com.google.gson.Gson;
+import io.ticktok.TicktokApi;
 import io.ticktok.TicktokOptions;
+import io.ticktok.register.Clock;
+import io.ticktok.register.RegisterClockRequest;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -14,12 +18,12 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
-public class TicktokRestClient {
+public class RestTicktokClient {
     private final String token;
     private HttpClient client;
     private final String domain;
 
-    public TicktokRestClient(TicktokOptions options){
+    public RestTicktokClient(TicktokOptions options){
         this.domain = options.getDomain();
         this.token = options.getToken();
         this.client = HttpClientBuilder.create().build();
@@ -53,4 +57,11 @@ public class TicktokRestClient {
         }
     }
 
+    public Clock register(String schedule) throws IOException {
+        return new Gson().fromJson(post(handleBody(schedule), TicktokApi.REGISTER_NEW_CLOCK), Clock.class);
+    }
+
+    private String handleBody(String schedule) {
+        return new Gson().toJson(new RegisterClockRequest(schedule));
+    }
 }

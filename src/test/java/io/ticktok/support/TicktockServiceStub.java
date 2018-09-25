@@ -8,53 +8,43 @@ import org.rockm.blink.BlinkServer;
 
 import java.io.IOException;
 
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+
 public class TicktockServiceStub {
+
+    public static final String TICKTOK_SERVICE_DOMAIN = "http://localhost:9999";
+    public static final String TOKEN = "Bfmx3Z7y9GxY4yLrKP";
 
     private BlinkServer ticktokService;
     public ClockRequest lastClockRequest;
 
     public TicktockServiceStub(int port) throws IOException {
-
         ticktokService = new BlinkServer(port) {{
-            post("/api/v1/clocks", (req, res) ->{
+            post("/api/v1/clocks", (req, res) -> {
+                assert req.header(AUTHORIZATION).equals(TOKEN);
                 lastClockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
-                return returnClock(req) ;
-                }
-            );
-        }
-
-            private String returnClock(BlinkRequest req) {
-                return new Gson().toJson(new Clock().builder().
-                        id("123").
-                        schedule(extractBody(req)).
-                        url("localhost").
-                        clockChannel(ClockChannel.builder().exchange("exchange").topic("myTopic").uri("localhost").build()).
-                        build());
-            }
-
-            private String extractBody(BlinkRequest req) {
-                return new Gson().fromJson(req.body(), ClockRequest.class).schedule;
-            }
-        };
-
+                return createClockFrom(req);
+            });
+        }};
     }
 
-    /**
-     * {
-     *   "channel": {
-     *     "exchange": "string",
-     *     "topic": "string",
-     *     "uri": "string"
-     *   },
-     *   "id": "string",
-     *   "schedule": "string",
-     *   "url": "string"
-     * }
-     */
-    public class ClockRequest{
+    private String createClockFrom(BlinkRequest req) {
+        return new Gson().toJson(Clock.builder().
+                id("123").
+                schedule(extractBody(req)).
+                url(TickPublisher.QUEUE_HOST).
+                clockChannel(ClockChannel.builder().exchange(TickPublisher.QUEUE_EXCHANGE).topic("myTopic").uri("amqp://localhost:5672").build()).
+                build());
+    }
+
+    private String extractBody(BlinkRequest req) {
+        return new Gson().fromJson(req.body(), ClockRequest.class).schedule;
+    }
+
+    public class ClockRequest {
         public String schedule = "";
 
-        public ClockRequest(String schedule){
+        public ClockRequest(String schedule) {
             this.schedule = schedule;
         }
     }
