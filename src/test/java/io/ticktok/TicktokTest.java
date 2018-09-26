@@ -22,7 +22,7 @@ public class TicktokTest {
 
     @Before
     public void init() throws IOException {
-        ticktockServiceStub = new TicktockServiceStub(9999);
+        ticktockServiceStub = new TicktockServiceStub(9999, true);
     }
 
     @Test

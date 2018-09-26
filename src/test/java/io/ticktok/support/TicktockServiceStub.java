@@ -18,22 +18,22 @@ public class TicktockServiceStub {
     private BlinkServer ticktokService;
     public ClockRequest lastClockRequest;
 
-    public TicktockServiceStub(int port) throws IOException {
+    public TicktockServiceStub(int port, boolean validResponse) throws IOException {
         ticktokService = new BlinkServer(port) {{
             post("/api/v1/clocks", (req, res) -> {
                 assert req.header(AUTHORIZATION).equals(TOKEN);
                 lastClockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
-                return createClockFrom(req);
+                return createClockFrom(req, validResponse);
             });
         }};
     }
 
-    private String createClockFrom(BlinkRequest req) {
+    private String createClockFrom(BlinkRequest req, boolean validResponse) {
         return new Gson().toJson(Clock.builder().
                 id("123").
                 schedule(extractBody(req)).
                 url(TickPublisher.QUEUE_HOST).
-                clockChannel(ClockChannel.builder().exchange(TickPublisher.QUEUE_EXCHANGE).topic("myTopic").uri("amqp://localhost:5672").build()).
+                clockChannel(ClockChannel.builder().exchange(TickPublisher.QUEUE_EXCHANGE).topic("myTopic").uri(validResponse ? "amqp://localhost:5672" : "badUri").build()).
                 build());
     }
 
