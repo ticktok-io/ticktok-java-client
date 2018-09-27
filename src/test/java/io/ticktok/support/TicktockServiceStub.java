@@ -21,11 +21,15 @@ public class TicktockServiceStub {
     public TicktockServiceStub(int port, boolean validResponse) throws IOException {
         ticktokService = new BlinkServer(port) {{
             post("/api/v1/clocks", (req, res) -> {
-                assert req.header(AUTHORIZATION).equals(TOKEN);
+                validateToken(req);
                 lastClockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
                 return createClockFrom(req, validResponse);
             });
         }};
+    }
+
+    private void validateToken(BlinkRequest req) {
+        assert req.header(AUTHORIZATION).equals(TOKEN);
     }
 
     private String createClockFrom(BlinkRequest req, boolean validResponse) {
