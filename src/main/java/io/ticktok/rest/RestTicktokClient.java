@@ -29,6 +29,10 @@ public class RestTicktokClient {
         this.client = HttpClientBuilder.create().build();
     }
 
+    public String post(String entry, String entryDomain) throws IOException {
+        return handleBodyCall(new HttpPost(this.domain + "/" + entryDomain), entry);
+    }
+
     private String handleBodyCall(HttpEntityEnclosingRequestBase request, String entry) throws IOException {
         request.setEntity(new StringEntity(entry));
         request.setHeaders(defaultHeaders());
@@ -37,10 +41,6 @@ public class RestTicktokClient {
         request.releaseConnection();
         validateResponseWasOk(response);
         return restCallResponse;
-    }
-
-    public String post(String entry, String entryDomain) throws IOException {
-        return handleBodyCall(new HttpPost(this.domain + "/" + entryDomain), entry);
     }
 
     private BasicHeader[] defaultHeaders() {

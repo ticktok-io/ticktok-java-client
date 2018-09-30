@@ -17,12 +17,16 @@ public class TickPublisher {
         Channel channel = connection.createChannel();
         channel.exchangeDeclare(QUEUE_EXCHANGE, "fanout");
 
-        String message = "tick";
-        channel.basicPublish(QUEUE_EXCHANGE, "", null, message.getBytes());
-        System.out.println(" [x] Sent '" + message + "'");
+        sendTick(channel);
 
         channel.close();
         connection.close();
+    }
+
+    private static void sendTick(Channel channel) throws IOException {
+        String message = "tick";
+        channel.basicPublish(QUEUE_EXCHANGE, "", null, message.getBytes());
+        System.out.println(" [x] Sent '" + message + "'");
     }
 
     private static Connection createConnection() throws IOException, TimeoutException {
