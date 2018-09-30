@@ -1,10 +1,8 @@
 package io.ticktok;
 
-import com.google.gson.Gson;
-import io.ticktok.register.RegisterClockRequest;
-import io.ticktok.rest.TicktokRestClient;
-
-import java.io.IOException;
+import io.ticktok.Listener.TickListener;
+import io.ticktok.register.Clock;
+import io.ticktok.rest.RestTicktokClient;
 
 public class Ticktok {
 
@@ -14,11 +12,18 @@ public class Ticktok {
         this.options = options;
     }
 
-    public void newClock(String schedule) throws IOException {
-        new TicktokRestClient(this.options).post(handleBody(schedule), TicktokApi.REGISTER_NEW_CLOCK);
+    public void newClock(String schedule, Runnable runnable) {
+        try {
+            Clock clock = new RestTicktokClient(this.options).register(schedule);
+            TickListener.listen(clock.getClockChannel(), runnable);
+        } catch (Exception e) {
+            throw new TicktokException("operation failed: " + e);
+        }
     }
 
-    private String handleBody(String schedule) {
-        return new Gson().toJson(new RegisterClockRequest(schedule));
+    public static class TicktokException extends RuntimeException {
+        public TicktokException(String message) {
+            super(message);
+        }
     }
 }
