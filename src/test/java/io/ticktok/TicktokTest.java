@@ -33,7 +33,7 @@ public class TicktokTest {
     }
 
     private void register(Runnable runnable) {
-        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, "my_clock", runnable);
+        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock("my_clock").on(EVERY_5_SECONDS).invoke(runnable);
     }
 
     @Test
