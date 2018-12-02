@@ -1,6 +1,7 @@
 package io.ticktok.rest;
 
 import com.google.gson.Gson;
+import io.ticktok.Ticktok;
 import io.ticktok.TicktokApi;
 import io.ticktok.TicktokOptions;
 import io.ticktok.register.Clock;
@@ -18,6 +19,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
+import static io.ticktok.Ticktok.*;
+
 public class RestTicktokClient {
     private final String token;
     private HttpClient client;
@@ -29,18 +32,22 @@ public class RestTicktokClient {
         this.client = HttpClientBuilder.create().build();
     }
 
-    public String post(String entry, String entryDomain) throws IOException {
+    public String post(String entry, String entryDomain) throws TicktokException {
         return handleBodyCall(new HttpPost(this.domain + "/" + entryDomain), entry);
     }
 
-    private String handleBodyCall(HttpEntityEnclosingRequestBase request, String entry) throws IOException {
-        request.setEntity(new StringEntity(entry));
-        request.setHeaders(defaultHeaders());
-        HttpResponse response = client.execute(request);
-        String restCallResponse = EntityUtils.toString(response.getEntity());
-        request.releaseConnection();
-        validateResponseWasOk(response);
-        return restCallResponse;
+    private String handleBodyCall(HttpEntityEnclosingRequestBase request, String entry) throws TicktokException {
+        try {
+            request.setEntity(new StringEntity(entry));
+            request.setHeaders(defaultHeaders());
+            HttpResponse response = client.execute(request);
+            String restCallResponse = EntityUtils.toString(response.getEntity());
+            request.releaseConnection();
+            validateResponseWasOk(response);
+            return restCallResponse;
+        } catch (Exception e){
+            throw new TicktokException(e.getMessage());
+        }
     }
 
     private BasicHeader[] defaultHeaders() {
@@ -57,7 +64,7 @@ public class RestTicktokClient {
         }
     }
 
-    public Clock register(String name, String schedule) throws IOException {
+    public Clock register(String name, String schedule) {
         return new Gson().fromJson(post(handleBody(name, schedule), TicktokApi.REGISTER_NEW_CLOCK), Clock.class);
     }
 
