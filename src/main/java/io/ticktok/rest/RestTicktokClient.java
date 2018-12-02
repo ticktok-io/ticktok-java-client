@@ -57,11 +57,11 @@ public class RestTicktokClient {
         }
     }
 
-    public Clock register(String schedule) throws IOException {
-        return new Gson().fromJson(post(handleBody(schedule), TicktokApi.REGISTER_NEW_CLOCK), Clock.class);
+    public Clock register(String name, String schedule) throws IOException {
+        return new Gson().fromJson(post(handleBody(name, schedule), TicktokApi.REGISTER_NEW_CLOCK), Clock.class);
     }
 
-    private String handleBody(String schedule) {
-        return new Gson().toJson(new RegisterClockRequest(schedule));
+    private String handleBody(String name, String schedule) {
+        return new Gson().toJson(new RegisterClockRequest(name, schedule));
     }
 }

@@ -12,9 +12,9 @@ public class Ticktok {
         this.options = options;
     }
 
-    public void newClock(String schedule, Runnable runnable) {
+    public void newClock(String schedule, String name, Runnable runnable) {
         try {
-            Clock clock = new RestTicktokClient(this.options).register(schedule);
+            Clock clock = new RestTicktokClient(this.options).register(name, schedule);
             TickListener.listen(clock.getClockChannel(), runnable);
         } catch (Exception e) {
             throw new TicktokException("operation failed: " + e);

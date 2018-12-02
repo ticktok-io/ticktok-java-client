@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -21,19 +20,20 @@ public class TicktokTest {
     private TicktockServiceStub ticktockServiceStub;
 
     @Before
-    public void init() throws IOException {
+    public void init() {
         ticktockServiceStub = new TicktockServiceStub(9999, true);
     }
 
     @Test
-    public void registerNewClock() throws IOException {
+    public void registerNewClock() {
         // TODO - TicktokOptions should be builder
         register(() -> {}); // schedule
         assertThat(ticktockServiceStub.lastClockRequest.schedule, is(EVERY_5_SECONDS));
+        assertThat(ticktockServiceStub.lastClockRequest.name, is("my_clock"));
     }
 
-    private void register(Runnable runnable) throws IOException {
-        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, runnable);
+    private void register(Runnable runnable) {
+        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, "my_clock", runnable);
     }
 
     @Test

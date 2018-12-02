@@ -18,11 +18,11 @@ public class TicktokTest_BrokenServer {
     }
 
     private void register(Runnable runnable) {
-        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, runnable);
+        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock(EVERY_5_SECONDS, "my_clock", runnable);
     }
 
     @Test(expected = Ticktok.TicktokException.class)
-    public void failOnQueueDown() throws IOException {
+    public void failOnQueueDown() {
         TicktockServiceStub stub =  new TicktockServiceStub(9999, false);
         register(() -> {});
         stub.stop();
