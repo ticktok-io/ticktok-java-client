@@ -17,18 +17,18 @@ public class Ticktok {
     }
 
     public Ticktok newClock(String name) {
-        validate(name);
         this.name = name;
         return this;
     }
 
     public Ticktok on(String schedule){
-        validate(schedule);
         this.schedule = schedule;
         return this;
     }
 
-    public void invoke(Runnable runnable) throws TicktokException {
+    public void invoke(Runnable runnable){
+        validate(this.name);
+        validate(this.schedule);
         Clock clock = new RestTicktokClient(this.options).register(this.name, this.schedule);
         TickListener.listen(clock.getClockChannel(), runnable);
     }

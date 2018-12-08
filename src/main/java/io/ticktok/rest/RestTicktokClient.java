@@ -2,70 +2,44 @@ package io.ticktok.rest;
 
 import com.google.gson.Gson;
 import io.ticktok.Ticktok;
-import io.ticktok.TicktokApi;
 import io.ticktok.TicktokOptions;
 import io.ticktok.register.Clock;
 import io.ticktok.register.RegisterClockRequest;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
 
 import java.io.IOException;
 
-import static io.ticktok.Ticktok.*;
+import static io.ticktok.TicktokApi.*;
 
 public class RestTicktokClient {
     private final String token;
-    private HttpClient client;
     private final String domain;
 
     public RestTicktokClient(TicktokOptions options){
         this.domain = options.getDomain();
         this.token = options.getToken();
-        this.client = HttpClientBuilder.create().build();
-    }
-
-    public String post(String entry, String entryDomain) throws TicktokException {
-        return handleBodyCall(new HttpPost(this.domain + "/" + entryDomain), entry);
-    }
-
-    private String handleBodyCall(HttpEntityEnclosingRequestBase request, String entry) throws TicktokException {
-        try {
-            request.setEntity(new StringEntity(entry));
-            request.setHeaders(defaultHeaders());
-            HttpResponse response = client.execute(request);
-            String restCallResponse = EntityUtils.toString(response.getEntity());
-            request.releaseConnection();
-            validateResponseWasOk(response);
-            return restCallResponse;
-        } catch (Exception e){
-            throw new TicktokException(e.getMessage());
-        }
-    }
-
-    private BasicHeader[] defaultHeaders() {
-        return new BasicHeader[]{
-                new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
-                new BasicHeader(HttpHeaders.ACCEPT, "application/json"),
-                new BasicHeader(HttpHeaders.AUTHORIZATION, this.token)
-        };
-    }
-
-    private void validateResponseWasOk(HttpResponse response) {
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            System.out.println("response code not ok " + response.getStatusLine().getStatusCode());
-        }
     }
 
     public Clock register(String name, String schedule) {
-        return new Gson().fromJson(post(handleBody(name, schedule), TicktokApi.REGISTER_NEW_CLOCK), Clock.class);
+        return new Gson().fromJson(call(name, schedule), Clock.class);
+    }
+
+    private String call(String name, String schedule) {
+        try {
+            return Request.
+                    Post(calcUrl()).
+                    bodyString(handleBody(name, schedule), ContentType.APPLICATION_JSON).
+                    execute().
+                    returnContent().
+                    asString();
+        } catch (IOException e) {
+            throw new Ticktok.TicktokException("fail to register clock");
+        }
+    }
+
+    private String calcUrl() {
+        return this.domain + "/" + REGISTER_NEW_CLOCK + "?access_token=" + this.token;
     }
 
     private String handleBody(String name, String schedule) {

@@ -2,8 +2,8 @@ package io.ticktok;
 
 import io.ticktok.support.TickPublisher;
 import io.ticktok.support.TicktockServiceStub;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -17,10 +17,10 @@ import static org.hamcrest.core.Is.is;
 public class TicktokTest {
 
     private static final String EVERY_5_SECONDS = "every.5.seconds";
-    private TicktockServiceStub ticktockServiceStub;
+    private static TicktockServiceStub ticktockServiceStub;
 
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void init() {
         ticktockServiceStub = new TicktockServiceStub(9999, true);
     }
 
@@ -55,8 +55,8 @@ public class TicktokTest {
         assert countDownLatch.getCount() == 1;
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
         ticktockServiceStub.stop();
     }
 

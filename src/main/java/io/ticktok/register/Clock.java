@@ -14,4 +14,5 @@ public class Clock {
     private String id;
     private String schedule;
     private String url;
+    private String name;
 }
