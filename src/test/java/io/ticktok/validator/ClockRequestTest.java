@@ -1,17 +1,18 @@
 package io.ticktok.validator;
 
-import io.ticktok.Ticktok;
+import io.ticktok.validator.ClockRequest.TicktokInvalidValueException;
 import org.junit.Test;
 
 public class ClockRequestTest {
 
-    @Test(expected = Ticktok.TicktokException.class)
-    public void shouldThrowExceptionGivenEmptyString(){ new ClockRequest("", "");
+    @Test(expected = TicktokInvalidValueException.class)
+    public void shouldThrowExceptionGivenEmptyString(){
+        ClockRequest.create("", "");
     }
 
-    @Test(expected = Ticktok.TicktokException.class)
+    @Test(expected = TicktokInvalidValueException.class)
     public void shouldThrowExceptionGivenNull(){
-        new ClockRequest(null, null);
+        ClockRequest.create(null, null);
     }
 
 }

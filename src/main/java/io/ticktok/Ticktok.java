@@ -26,7 +26,7 @@ public class Ticktok {
     }
 
     public void invoke(Runnable runnable){
-        Clock clock = new RestTicktokClient(this.options).register(new ClockRequest(this.name, this.schedule));
+        Clock clock = new RestTicktokClient(this.options).register(ClockRequest.create(this.name, this.schedule));
         TickListener.listen(clock.getClockChannel(), runnable);
     }
 

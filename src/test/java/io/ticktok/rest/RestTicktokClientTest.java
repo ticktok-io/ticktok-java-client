@@ -11,13 +11,13 @@ public class RestTicktokClientTest {
 
     @Test(expected = Ticktok.TicktokException.class)
     public void shouldFailOnServiceNotAvailable(){
-        new RestTicktokClient(new TicktokOptions()).register(new ClockRequest("clock_name", "clock_schedule"));
+        new RestTicktokClient(new TicktokOptions()).register(ClockRequest.create("clock_name", "clock_schedule"));
     }
 
     @Test
     public void failMsgShouldBeRespectable(){
         try {
-            new RestTicktokClient(new TicktokOptions()).register(new ClockRequest("clock_name", "clock_schedule"));
+            new RestTicktokClient(new TicktokOptions()).register(ClockRequest.create("clock_name", "clock_schedule"));
         } catch (Ticktok.TicktokException e){
             Assert.assertThat(e.getMessage(), Is.is("fail to register clock"));
         }

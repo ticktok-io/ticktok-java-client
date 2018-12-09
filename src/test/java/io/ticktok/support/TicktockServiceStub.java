@@ -52,8 +52,8 @@ public class TicktockServiceStub {
     }
 
     public class ClockRequest {
-        public String schedule = "";
-        public String name = "";
+        public String schedule;
+        public String name;
 
         public ClockRequest(String schedule, String name) {
             this.schedule = schedule;

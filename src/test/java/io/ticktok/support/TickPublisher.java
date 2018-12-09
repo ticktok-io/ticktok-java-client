@@ -24,9 +24,7 @@ public class TickPublisher {
     }
 
     private static void sendTick(Channel channel) throws IOException {
-        String message = "tick";
-        channel.basicPublish(QUEUE_EXCHANGE, "", null, message.getBytes());
-        System.out.println(" [x] Sent '" + message + "'");
+        channel.basicPublish(QUEUE_EXCHANGE, "", null, "tick".getBytes());
     }
 
     private static Connection createConnection() throws IOException, TimeoutException {

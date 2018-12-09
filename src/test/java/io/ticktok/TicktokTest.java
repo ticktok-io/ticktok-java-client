@@ -46,11 +46,6 @@ public class TicktokTest {
         // pass
     }
 
-    @Test(expected = Ticktok.TicktokException.class)
-    public void shouldFailGivenEmptySchedule(){
-        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock("my_clock").on("").invoke(() -> {});
-    }
-
     private void verifyCallbackWasntDoneSynchronicity(CountDownLatch countDownLatch) {
         assert countDownLatch.getCount() == 1;
     }

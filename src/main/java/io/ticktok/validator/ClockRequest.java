@@ -2,24 +2,26 @@ package io.ticktok.validator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import static io.ticktok.Ticktok.TicktokException;
-
 public class ClockRequest {
 
     private String name;
     private String schedule;
 
-    public ClockRequest(String name, String schedule) {
-        this.name = validate(name);
-        this.schedule = validate(schedule);
+    private ClockRequest(String name, String schedule) {
+        this.name = name;
+        this.schedule = schedule;
     }
 
-    private String validate(String prop) {
-        if(StringUtils.isBlank(prop)){
-            throw new TicktokException("value cannot be empty");
-        }
+    public static ClockRequest create(String name, String schedule) {
+        validateRequestParmValid(name);
+        validateRequestParmValid(schedule);
+        return new ClockRequest(name, schedule);
+    }
 
-        return prop;
+    private static void validateRequestParmValid(String prop) {
+        if(StringUtils.isBlank(prop)){
+            throw new TicktokInvalidValueException("value cannot be empty");
+        }
     }
 
     public String getSchedule() {
@@ -28,5 +30,11 @@ public class ClockRequest {
 
     public String getName() {
         return name;
+    }
+
+    public static class TicktokInvalidValueException extends RuntimeException {
+        public TicktokInvalidValueException(String message) {
+            super(message);
+        }
     }
 }
