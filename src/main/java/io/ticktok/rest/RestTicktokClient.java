@@ -5,6 +5,7 @@ import io.ticktok.Ticktok;
 import io.ticktok.TicktokOptions;
 import io.ticktok.register.Clock;
 import io.ticktok.register.RegisterClockRequest;
+import io.ticktok.validator.ClockRequest;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 
@@ -21,8 +22,8 @@ public class RestTicktokClient {
         this.token = options.getToken();
     }
 
-    public Clock register(String name, String schedule) {
-        return new Gson().fromJson(call(name, schedule), Clock.class);
+    public Clock register(ClockRequest clockRequest) {
+        return new Gson().fromJson(call(clockRequest.getName(), clockRequest.getSchedule()), Clock.class);
     }
 
     private String call(String name, String schedule) {

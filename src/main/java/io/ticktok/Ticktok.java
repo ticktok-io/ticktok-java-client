@@ -3,8 +3,7 @@ package io.ticktok;
 import io.ticktok.Listener.TickListener;
 import io.ticktok.register.Clock;
 import io.ticktok.rest.RestTicktokClient;
-
-import static io.ticktok.validator.TicktokValidator.validate;
+import io.ticktok.validator.ClockRequest;
 
 public class Ticktok {
 
@@ -27,9 +26,7 @@ public class Ticktok {
     }
 
     public void invoke(Runnable runnable){
-        validate(this.name);
-        validate(this.schedule);
-        Clock clock = new RestTicktokClient(this.options).register(this.name, this.schedule);
+        Clock clock = new RestTicktokClient(this.options).register(new ClockRequest(this.name, this.schedule));
         TickListener.listen(clock.getClockChannel(), runnable);
     }
 

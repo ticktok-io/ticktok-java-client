@@ -3,16 +3,15 @@ package io.ticktok.validator;
 import io.ticktok.Ticktok;
 import org.junit.Test;
 
-public class TicktokValidatorTest {
+public class ClockRequestTest {
 
     @Test(expected = Ticktok.TicktokException.class)
-    public void shouldThrowExceptionGivenEmptyString(){
-        TicktokValidator.validate("");
+    public void shouldThrowExceptionGivenEmptyString(){ new ClockRequest("", "");
     }
 
     @Test(expected = Ticktok.TicktokException.class)
     public void shouldThrowExceptionGivenNull(){
-        TicktokValidator.validate(null);
+        new ClockRequest(null, null);
     }
 
 }

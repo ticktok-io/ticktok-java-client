@@ -4,7 +4,6 @@ import com.rabbitmq.client.*;
 import io.ticktok.Ticktok.TicktokException;
 import io.ticktok.register.ClockChannel;
 
-import java.io.IOException;
 import java.net.URI;
 
 public class TickListener {
@@ -23,10 +22,7 @@ public class TickListener {
         return new DefaultConsumer(channel) {
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope,
-                                               AMQP.BasicProperties properties, byte[] body)
-                            throws IOException {
-                        String message = new String(body, "UTF-8");
-                        System.out.println(" [x] Received '" + message + "'");
+                                               AMQP.BasicProperties properties, byte[] body) {
                         runnable.run();
                     }
                 };
@@ -34,9 +30,7 @@ public class TickListener {
 
     private static Channel listen(ClockChannel clockChannel) throws Exception {
         Connection connection = createConnection(clockChannel);
-        Channel channel = connection.createChannel();
-        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-        return channel;
+        return connection.createChannel();
     }
 
     private static Connection createConnection(ClockChannel clockChannel) throws Exception {
