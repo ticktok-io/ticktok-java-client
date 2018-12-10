@@ -2,8 +2,6 @@ package io.ticktok.rest;
 
 import io.ticktok.Ticktok;
 import io.ticktok.TicktokOptions;
-import io.ticktok.validator.ClockRequest;
-import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

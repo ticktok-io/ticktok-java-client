@@ -1,4 +1,4 @@
-package io.ticktok.validator;
+package io.ticktok.rest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,12 +13,12 @@ public class ClockRequest {
     }
 
     public static ClockRequest create(String name, String schedule) {
-        validateRequestParmValid(name, "name");
-        validateRequestParmValid(schedule, "schedule");
+        validateNotBlank(name, "name");
+        validateNotBlank(schedule, "schedule");
         return new ClockRequest(name, schedule);
     }
 
-    private static void validateRequestParmValid(String prop, String propName) {
+    private static void validateNotBlank(String prop, String propName) {
         if(StringUtils.isBlank(prop)){
             throw new TicktokInvalidValueException( propName + " value cannot be empty");
         }

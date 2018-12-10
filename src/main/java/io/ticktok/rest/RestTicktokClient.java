@@ -5,7 +5,6 @@ import io.ticktok.Ticktok;
 import io.ticktok.TicktokOptions;
 import io.ticktok.register.Clock;
 import io.ticktok.register.RegisterClockRequest;
-import io.ticktok.validator.ClockRequest;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 

@@ -3,7 +3,7 @@ package io.ticktok;
 import io.ticktok.Listener.TickListener;
 import io.ticktok.register.Clock;
 import io.ticktok.rest.RestTicktokClient;
-import io.ticktok.validator.ClockRequest;
+import io.ticktok.rest.ClockRequest;
 
 public class Ticktok {
 
