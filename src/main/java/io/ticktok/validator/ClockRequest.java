@@ -13,14 +13,14 @@ public class ClockRequest {
     }
 
     public static ClockRequest create(String name, String schedule) {
-        validateRequestParmValid(name);
-        validateRequestParmValid(schedule);
+        validateRequestParmValid(name, "name");
+        validateRequestParmValid(schedule, "schedule");
         return new ClockRequest(name, schedule);
     }
 
-    private static void validateRequestParmValid(String prop) {
+    private static void validateRequestParmValid(String prop, String propName) {
         if(StringUtils.isBlank(prop)){
-            throw new TicktokInvalidValueException("value cannot be empty");
+            throw new TicktokInvalidValueException( propName + " value cannot be empty");
         }
     }
 

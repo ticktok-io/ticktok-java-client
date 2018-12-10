@@ -1,18 +1,27 @@
 package io.ticktok.validator;
 
 import io.ticktok.validator.ClockRequest.TicktokInvalidValueException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ClockRequestTest {
 
-    @Test(expected = TicktokInvalidValueException.class)
+    @Test
     public void shouldThrowExceptionGivenEmptyString(){
-        ClockRequest.create("", "");
+        assertThrows(TicktokInvalidValueException.class, () ->
+                ClockRequest.create("", ""));
     }
 
-    @Test(expected = TicktokInvalidValueException.class)
+    @Test
     public void shouldThrowExceptionGivenNull(){
-        ClockRequest.create(null, null);
+        assertThrows(TicktokInvalidValueException.class, () ->
+                ClockRequest.create(null, null));
     }
 
+    @Test
+    public void exceptionMsgShouldBeCorrelatedToCorruptedValue() {
+        assertThrows(TicktokInvalidValueException.class, () ->
+                ClockRequest.create("myName", ""), "schedule value cannot be empty");
+    }
 }

@@ -2,9 +2,9 @@ package io.ticktok;
 
 import io.ticktok.support.TickPublisher;
 import io.ticktok.support.TicktockServiceStub;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +19,7 @@ public class TicktokTest {
     private static final String EVERY_5_SECONDS = "every.5.seconds";
     private static TicktockServiceStub ticktockServiceStub;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         ticktockServiceStub = new TicktockServiceStub(9999, true);
     }
@@ -50,7 +50,7 @@ public class TicktokTest {
         assert countDownLatch.getCount() == 1;
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         ticktockServiceStub.stop();
     }
