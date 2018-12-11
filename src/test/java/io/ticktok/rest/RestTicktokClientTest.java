@@ -1,7 +1,9 @@
 package io.ticktok.rest;
 
+import io.javalin.Javalin;
 import io.ticktok.Ticktok;
 import io.ticktok.TicktokOptions;
+import io.ticktok.register.Clock;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,14 +11,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class RestTicktokClientTest {
 
     @Test
-    public void shouldFailOnServiceNotAvailable(){
-        assertThrows(Ticktok.TicktokException.class, () ->
-                new RestTicktokClient(new TicktokOptions()).register(ClockRequest.create("clock_name", "clock_schedule")));
+    public void failOnServiceNotAvailable(){
+        assertThrows(Ticktok.TicktokException.class, () -> buildRegisterRequest("every.5.seconds"));
+    }
+
+    private Clock buildRegisterRequest(String schedule) {
+        return new RestTicktokClient(new TicktokOptions("http://localhost:1212", "my_token")).register(ClockRequest.create("clock_name", schedule));
     }
 
     @Test
     public void failMsgShouldBeRespectable(){
-        assertThrows(Ticktok.TicktokException.class, () ->
-                new RestTicktokClient(new TicktokOptions()).register(ClockRequest.create("clock_name", "clock_schedule")), "fail to register clock");
+        assertThrows(Ticktok.TicktokException.class, () -> buildRegisterRequest("every.5.seconds"), "fail to register clock");
+    }
+
+    @Test
+    public void catchBadRequestGivenInValidSchedule(){
+        Javalin app = badRequestStub();
+        assertThrows(Ticktok.BadRequestException.class, () -> buildRegisterRequest("-"));
+        app.stop();
+    }
+
+    private Javalin badRequestStub() {
+        return Javalin.create().enableCaseSensitiveUrls().start(1212).post("/api/v1/clocks", ctx -> ctx.status(400));
     }
 }

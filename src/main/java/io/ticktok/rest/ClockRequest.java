@@ -2,6 +2,8 @@ package io.ticktok.rest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.MessageFormat;
+
 public class ClockRequest {
 
     private String name;
@@ -20,7 +22,7 @@ public class ClockRequest {
 
     private static void validateNotBlank(String prop, String propName) {
         if(StringUtils.isBlank(prop)){
-            throw new TicktokInvalidValueException( propName + " value cannot be empty");
+            throw new TicktokInvalidValueException(MessageFormat.format("[{0}] parameter cannot be empty", propName));
         }
     }
 

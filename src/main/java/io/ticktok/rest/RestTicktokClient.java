@@ -5,12 +5,14 @@ import io.ticktok.Ticktok;
 import io.ticktok.TicktokOptions;
 import io.ticktok.register.Clock;
 import io.ticktok.register.RegisterClockRequest;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
-import static io.ticktok.TicktokApi.*;
+import static io.ticktok.TicktokApi.REGISTER_NEW_CLOCK;
 
 public class RestTicktokClient {
     private final String token;
@@ -27,14 +29,21 @@ public class RestTicktokClient {
 
     private String call(String name, String schedule) {
         try {
-            return Request.
-                    Post(calcUrl()).
-                    bodyString(handleBody(name, schedule), ContentType.APPLICATION_JSON).
-                    execute().
-                    returnContent().
-                    asString();
+            HttpResponse httpResponse = Request.Post(calcUrl()).bodyString(handleBody(name, schedule), ContentType.APPLICATION_JSON).execute().returnResponse();
+            validateResponse(httpResponse);
+            return result(httpResponse);
         } catch (IOException e) {
             throw new Ticktok.TicktokException("fail to register clock");
+        }
+    }
+
+    private String result(HttpResponse httpResponse) throws IOException {
+        return EntityUtils.toString(httpResponse.getEntity());
+    }
+
+    private void validateResponse(HttpResponse httpResponse) {
+        if (httpResponse.getStatusLine().getStatusCode() == 400){
+            throw new Ticktok.BadRequestException("fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase());
         }
     }
 
