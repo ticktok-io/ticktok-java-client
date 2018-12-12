@@ -8,7 +8,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Getter
-@Setter
 public class RegisterClockRequest {
+    private String name;
     private String schedule;
 }
