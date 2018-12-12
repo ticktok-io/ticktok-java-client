@@ -24,7 +24,7 @@ public class TicktockServiceStub {
             validateToken(ctx.queryParam("access_token"));
             lastClockRequest = new Gson().fromJson(ctx.body(), ClockRequest.class);
             createQueueFor();
-            ctx.result(createClockFrom(ctx.body(), validResponse));
+            ctx.result(createClockFrom(ctx.body(), validResponse)).status(201);
         });
     }
 

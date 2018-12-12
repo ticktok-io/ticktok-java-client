@@ -42,8 +42,8 @@ public class RestTicktokClient {
     }
 
     private void validateResponse(HttpResponse httpResponse) {
-        if (httpResponse.getStatusLine().getStatusCode() == 400){
-            throw new Ticktok.BadRequestException("fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase());
+        if (httpResponse.getStatusLine().getStatusCode() != 201){
+            throw new Ticktok.TicktokServerException("fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase());
         }
     }
 

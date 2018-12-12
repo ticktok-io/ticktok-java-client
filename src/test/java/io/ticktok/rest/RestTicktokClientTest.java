@@ -27,7 +27,7 @@ public class RestTicktokClientTest {
     @Test
     public void catchBadRequestGivenInValidSchedule(){
         Javalin app = badRequestStub();
-        assertThrows(Ticktok.BadRequestException.class, () -> buildRegisterRequest("-"));
+        assertThrows(Ticktok.TicktokServerException.class, () -> buildRegisterRequest("-"));
         app.stop();
     }
 

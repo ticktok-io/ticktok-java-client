@@ -36,8 +36,8 @@ public class Ticktok {
         }
     }
 
-    public static class BadRequestException extends RuntimeException {
-        public BadRequestException(String message) {
+    public static class TicktokServerException extends RuntimeException {
+        public TicktokServerException(String message) {
             super(message);
         }
     }
