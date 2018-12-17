@@ -4,7 +4,7 @@
 
     <groupId>io.ticktok</groupId>
     <artifactId>ticktok-java-client</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
 
     <name>Ticktok Java client</name>
