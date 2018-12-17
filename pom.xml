@@ -82,4 +82,11 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>bintray-ticktok-io-maven</id>
+            <name>ticktok-java-client</name>
+            <url>https://api.bintray.com/maven/ticktok-io/maven/ticktok-java-client/;publish=1</url>
+        </repository>
+    </distributionManagement>
 </project>
