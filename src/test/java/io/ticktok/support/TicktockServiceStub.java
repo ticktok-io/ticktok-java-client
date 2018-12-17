@@ -14,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 public class TicktockServiceStub {
 
     public static final String TICKTOK_SERVICE_DOMAIN = "http://localhost:9999";
-    public static final String TOKEN = "Bfmx3Z7y9GxY4yLrKP";
+    public static final String TOKEN = "my_token";
 
     public ClockRequest lastClockRequest;
     private final Javalin app;
