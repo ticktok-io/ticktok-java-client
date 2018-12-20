@@ -2,23 +2,23 @@ package io.ticktok.Listener;
 
 import com.rabbitmq.client.*;
 import io.ticktok.Ticktok.TicktokException;
-import io.ticktok.register.ClockChannel;
+import io.ticktok.register.Channel;
 
 import java.net.URI;
 
 public class TickListener {
 
-    public static void listen(ClockChannel clockChannel, Runnable runnable) throws TicktokException {
+    public static void listen(Channel channel, Runnable runnable) throws TicktokException {
         try {
-            Channel channel = listen(clockChannel);
-            Consumer consumer = consume(runnable, channel);
-            channel.basicConsume(clockChannel.getQueue(), true, consumer);
+            com.rabbitmq.client.Channel tickChannel = listen(channel);
+            Consumer consumer = consume(runnable, tickChannel);
+            tickChannel.basicConsume(channel.getQueue(), true, consumer);
         } catch (Exception e) {
             throw new TicktokException(e.getMessage());
         }
     }
 
-    private static Consumer consume(Runnable runnable, Channel channel) {
+    private static Consumer consume(Runnable runnable, com.rabbitmq.client.Channel channel) {
         return new DefaultConsumer(channel) {
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope,
@@ -28,14 +28,14 @@ public class TickListener {
                 };
     }
 
-    private static Channel listen(ClockChannel clockChannel) throws Exception {
-        Connection connection = createConnection(clockChannel);
+    private static com.rabbitmq.client.Channel listen(Channel channel) throws Exception {
+        Connection connection = createConnection(channel);
         return connection.createChannel();
     }
 
-    private static Connection createConnection(ClockChannel clockChannel) throws Exception {
+    private static Connection createConnection(Channel channel) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(new URI(clockChannel.getUri()));
+        factory.setUri(new URI(channel.getUri()));
         return factory.newConnection();
     }
 }

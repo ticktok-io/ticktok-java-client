@@ -9,7 +9,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class ClockChannel {
+public class Channel {
     private String queue;
     private String uri;
 }

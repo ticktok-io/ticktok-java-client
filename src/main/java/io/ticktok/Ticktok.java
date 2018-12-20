@@ -27,7 +27,7 @@ public class Ticktok {
 
     public void invoke(Runnable runnable){
         Clock clock = new RestTicktokClient(this.options).register(ClockRequest.create(this.name, this.schedule));
-        TickListener.listen(clock.getClockChannel(), runnable);
+        TickListener.listen(clock.getChannel(), runnable);
     }
 
     public static class TicktokException extends RuntimeException {

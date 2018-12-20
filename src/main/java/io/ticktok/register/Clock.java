@@ -10,7 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 public class Clock {
-    private ClockChannel clockChannel;
+    private Channel channel;
     private String id;
     private String schedule;
     private String url;

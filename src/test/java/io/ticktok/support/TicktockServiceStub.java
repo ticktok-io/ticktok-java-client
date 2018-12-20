@@ -1,11 +1,10 @@
 package io.ticktok.support;
 
 import com.google.gson.Gson;
-import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import io.javalin.Javalin;
 import io.ticktok.register.Clock;
-import io.ticktok.register.ClockChannel;
+import io.ticktok.register.Channel;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -29,7 +28,7 @@ public class TicktockServiceStub {
     }
 
     private void createQueueFor() throws IOException, TimeoutException {
-        Channel channel = new ConnectionFactory().newConnection().createChannel();
+        com.rabbitmq.client.Channel channel = new ConnectionFactory().newConnection().createChannel();
         channel.queueDeclare(lastClockRequest.name, false, false, false, null);
     }
 
@@ -42,7 +41,7 @@ public class TicktockServiceStub {
                 id("123").
                 schedule(extractBody(body)).
                 url(TickPublisher.QUEUE_HOST).
-                clockChannel(ClockChannel.builder().queue(lastClockRequest.name).uri(validResponse ? "amqp://localhost:5672" : "badUri").build()).
+                channel(Channel.builder().queue(lastClockRequest.name).uri(validResponse ? "amqp://localhost:5672" : "badUri").build()).
                 name(lastClockRequest.name).
                 build());
     }
