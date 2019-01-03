@@ -40,13 +40,12 @@ new Ticktok(new TicktokOptions("<Ticktok-Domain>", "<Ticktok token>")).
         });
 }
 ```
-## Related
 
-[markdownify-web](https://github.com/amitmerchant1990/markdownify-web) - Web version of Markdownify
+## Related
+[markdownify-web](https://github.com/ticktok-io/ticktok.io) - Ticktok.io
 
 ## License
 MIT
-
 
 -----
 
