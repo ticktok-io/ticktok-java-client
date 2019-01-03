@@ -42,7 +42,7 @@ new Ticktok(new TicktokOptions("<Ticktok-Domain>", "<Ticktok token>")).
 ```
 
 ## Related
-[markdownify-web](https://github.com/ticktok-io/ticktok.io) - Ticktok.io
+[Ticktok.io](https://github.com/ticktok-io/ticktok.io) - ticktok.io service
 
 ## License
 MIT
