@@ -19,7 +19,7 @@ public class TicktockServiceStub {
     private final Javalin app;
 
     public TicktockServiceStub(int port, boolean validResponse) {
-        app = Javalin.create().enableCaseSensitiveUrls().start(port).post("/api/v1/clocks", ctx -> {
+        app = Javalin.create().disableStartupBanner().enableCaseSensitiveUrls().start(port).post("/api/v1/clocks", ctx -> {
             validateToken(ctx.queryParam("access_token"));
             lastClockRequest = new Gson().fromJson(ctx.body(), ClockRequest.class);
             createQueueFor();

@@ -1,9 +1,12 @@
 package io.ticktok;
 
 import io.ticktok.Listener.TickListener;
+import io.ticktok.logger.TicktokLogger;
 import io.ticktok.register.Clock;
 import io.ticktok.rest.RestTicktokClient;
 import io.ticktok.rest.ClockRequest;
+
+import static io.ticktok.logger.TicktokLogger.log;
 
 public class Ticktok {
 
@@ -33,12 +36,14 @@ public class Ticktok {
     public static class TicktokException extends RuntimeException {
         public TicktokException(String message) {
             super(message);
+            log.error(message);
         }
     }
 
     public static class TicktokServerException extends RuntimeException {
         public TicktokServerException(String message) {
             super(message);
+            log.error(message);
         }
     }
 }

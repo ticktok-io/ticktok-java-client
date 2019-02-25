@@ -3,6 +3,7 @@ package io.ticktok.rest;
 import com.google.gson.Gson;
 import io.ticktok.Ticktok;
 import io.ticktok.TicktokOptions;
+import io.ticktok.logger.TicktokLogger;
 import io.ticktok.register.Clock;
 import io.ticktok.register.RegisterClockRequest;
 import org.apache.http.HttpResponse;
@@ -11,8 +12,10 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import static io.ticktok.TicktokApi.REGISTER_NEW_CLOCK;
+import static io.ticktok.logger.TicktokLogger.log;
 
 public class RestTicktokClient {
     private final String token;
@@ -29,8 +32,10 @@ public class RestTicktokClient {
 
     private String call(String name, String schedule) {
         try {
+            log.debug(MessageFormat.format("going to register clock for name: {0} for every : {1} ", name, schedule));
             HttpResponse httpResponse = Request.Post(calcUrl()).bodyString(handleBody(name, schedule), ContentType.APPLICATION_JSON).execute().returnResponse();
             validateResponse(httpResponse);
+            log.debug(MessageFormat.format("registered clock for name: {0} for every : {1} ", name, schedule));
             return result(httpResponse);
         } catch (IOException e) {
             throw new Ticktok.TicktokException("fail to register clock");

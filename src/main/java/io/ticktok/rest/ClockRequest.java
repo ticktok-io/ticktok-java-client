@@ -1,8 +1,9 @@
 package io.ticktok.rest;
 
 import org.apache.commons.lang3.StringUtils;
-
 import java.text.MessageFormat;
+
+import static io.ticktok.logger.TicktokLogger.log;
 
 public class ClockRequest {
 
@@ -37,6 +38,7 @@ public class ClockRequest {
     public static class TicktokInvalidValueException extends RuntimeException {
         public TicktokInvalidValueException(String message) {
             super(message);
+            log.error(message);
         }
     }
 }
