@@ -3,8 +3,11 @@ package io.ticktok.Listener;
 import com.rabbitmq.client.*;
 import io.ticktok.Ticktok.TicktokException;
 import io.ticktok.register.Channel;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.net.URI;
+import java.text.MessageFormat;
+
+import static io.ticktok.rest.ClockRequest.TicktokInvalidValueException;
 
 public class TickListener {
 
@@ -14,7 +17,8 @@ public class TickListener {
             Consumer consumer = consume(runnable, tickChannel);
             tickChannel.basicConsume(channel.getQueue(), true, consumer);
         } catch (Exception e) {
-            throw new TicktokException(e.getMessage());
+            throw new TicktokException(MessageFormat.format("Ticktok failed to connect to queue: {0}, with uri: {1}. follow trace: {2}",
+                    channel.getQueue(), channel.getUri(), ExceptionUtils.getStackTrace(e)));
         }
     }
 
@@ -33,9 +37,13 @@ public class TickListener {
         return connection.createChannel();
     }
 
-    private static Connection createConnection(Channel channel) throws Exception {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(new URI(channel.getUri()));
-        return factory.newConnection();
+    private static Connection createConnection(Channel channel) {
+        try {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setUri(channel.getUri());
+            return factory.newConnection();
+        } catch (Exception e) {
+            throw new TicktokInvalidValueException(MessageFormat.format("Queue uri - {0} is invalid, failed to listen to queue", channel.getUri()));
+        }
     }
 }
