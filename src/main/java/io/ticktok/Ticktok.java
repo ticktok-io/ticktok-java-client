@@ -36,14 +36,12 @@ public class Ticktok {
     public static class TicktokException extends RuntimeException {
         public TicktokException(String message) {
             super(message);
-            log.error(message);
         }
     }
 
     public static class TicktokServerException extends RuntimeException {
         public TicktokServerException(String message) {
             super(message);
-            log.error(message);
         }
     }
 }

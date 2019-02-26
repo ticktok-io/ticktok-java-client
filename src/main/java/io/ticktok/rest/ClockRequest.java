@@ -23,8 +23,15 @@ public class ClockRequest {
 
     private static void validateNotBlank(String prop, String propName) {
         if(StringUtils.isBlank(prop)){
-            throw new TicktokInvalidValueException(MessageFormat.format("[{0}] parameter cannot be empty", propName));
+            String message = logException(propName);
+            throw new TicktokInvalidValueException(message);
         }
+    }
+
+    private static String logException(String propName) {
+        String message = MessageFormat.format("[{0}] parameter cannot be empty", propName);
+        log.error(message);
+        return message;
     }
 
     public String getSchedule() {
@@ -38,7 +45,6 @@ public class ClockRequest {
     public static class TicktokInvalidValueException extends RuntimeException {
         public TicktokInvalidValueException(String message) {
             super(message);
-            log.error(message);
         }
     }
 }

@@ -32,7 +32,6 @@ public class RestTicktokClient {
 
     private String call(String name, String schedule) {
         try {
-            log.debug(MessageFormat.format("going to register clock for name: {0} for every : {1} ", name, schedule));
             HttpResponse httpResponse = Request.Post(calcUrl()).bodyString(handleBody(name, schedule), ContentType.APPLICATION_JSON).execute().returnResponse();
             validateResponse(httpResponse);
             log.debug(MessageFormat.format("registered clock for name: {0} for every : {1} ", name, schedule));
@@ -48,8 +47,15 @@ public class RestTicktokClient {
 
     private void validateResponse(HttpResponse httpResponse) {
         if (httpResponse.getStatusLine().getStatusCode() != 201){
-            throw new Ticktok.TicktokServerException("fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase());
+            String message = logException(httpResponse);
+            throw new Ticktok.TicktokServerException(message);
         }
+    }
+
+    private String logException(HttpResponse httpResponse) {
+        String message = "fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase();
+        log.error(message);
+        return message;
     }
 
     private String calcUrl() {

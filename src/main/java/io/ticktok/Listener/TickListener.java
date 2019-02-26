@@ -19,6 +19,7 @@ public class TickListener {
             tickChannel.basicConsume(channel.getQueue(), true, consumer);
             log.debug(MessageFormat.format("now listening on queue : {0}", channel.getQueue()));
         } catch (Exception e) {
+            log.error(e);
             throw new TicktokException(e.getMessage());
         }
     }
