@@ -1,12 +1,9 @@
 package io.ticktok;
 
 import io.ticktok.Listener.TickListener;
-import io.ticktok.logger.TicktokLogger;
 import io.ticktok.register.Clock;
-import io.ticktok.rest.RestTicktokClient;
 import io.ticktok.rest.ClockRequest;
-
-import static io.ticktok.logger.TicktokLogger.log;
+import io.ticktok.rest.RestTicktokClient;
 
 public class Ticktok {
 

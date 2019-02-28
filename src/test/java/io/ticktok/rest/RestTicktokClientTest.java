@@ -32,6 +32,6 @@ public class RestTicktokClientTest {
     }
 
     private Javalin badRequestStub() {
-        return Javalin.create().enableCaseSensitiveUrls().start(1212).post("/api/v1/clocks", ctx -> ctx.status(400));
+        return Javalin.create().enableCaseSensitiveUrls().start(1212).post("/api/v1/clocks", ctx -> ctx.result("bad clock schedule phrase").status(400));
     }
 }

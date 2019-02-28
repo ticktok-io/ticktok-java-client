@@ -3,9 +3,10 @@ package io.ticktok.rest;
 import com.google.gson.Gson;
 import io.ticktok.Ticktok;
 import io.ticktok.TicktokOptions;
-import io.ticktok.logger.TicktokLogger;
 import io.ticktok.register.Clock;
 import io.ticktok.register.RegisterClockRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
@@ -15,8 +16,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 import static io.ticktok.TicktokApi.REGISTER_NEW_CLOCK;
-import static io.ticktok.logger.TicktokLogger.log;
 
+@Slf4j
 public class RestTicktokClient {
     private final String token;
     private final String domain;
@@ -34,15 +35,17 @@ public class RestTicktokClient {
         try {
             HttpResponse httpResponse = Request.Post(calcUrl()).bodyString(handleBody(name, schedule), ContentType.APPLICATION_JSON).execute().returnResponse();
             validateResponse(httpResponse);
-            log.debug(MessageFormat.format("registered clock for name: {0} for every : {1} ", name, schedule));
+            log.debug("registered clock for name: {} for every : {} ", name, schedule);
             return result(httpResponse);
         } catch (IOException e) {
-            throw new Ticktok.TicktokException("fail to register clock");
+            String message = "fail to register clock, please follow reason:" + ExceptionUtils.getStackTrace(e);
+            log.error(message);
+            throw new Ticktok.TicktokException(message);
         }
     }
 
-    private String result(HttpResponse httpResponse) throws IOException {
-        return EntityUtils.toString(httpResponse.getEntity());
+    private String result(HttpResponse httpResponse) {
+        return logErrorEntity(httpResponse);
     }
 
     private void validateResponse(HttpResponse httpResponse) {
@@ -53,9 +56,19 @@ public class RestTicktokClient {
     }
 
     private String logException(HttpResponse httpResponse) {
-        String message = "fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase();
+        String message = MessageFormat.format("fail to register clock duo to bad request : {0} - {1}", httpResponse.getStatusLine().getReasonPhrase(), logErrorEntity(httpResponse));
         log.error(message);
         return message;
+    }
+
+    private String logErrorEntity(HttpResponse httpResponse) {
+        try {
+            return EntityUtils.toString(httpResponse.getEntity());
+        } catch (IOException e) {
+            // was no body in error, do nothing
+        }
+
+        return "";
     }
 
     private String calcUrl() {

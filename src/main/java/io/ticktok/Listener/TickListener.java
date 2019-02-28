@@ -2,14 +2,11 @@ package io.ticktok.Listener;
 
 import com.rabbitmq.client.*;
 import io.ticktok.Ticktok.TicktokException;
-import io.ticktok.logger.TicktokLogger;
 import io.ticktok.register.Channel;
-
+import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
-import java.text.MessageFormat;
 
-import static io.ticktok.logger.TicktokLogger.log;
-
+@Slf4j
 public class TickListener {
 
     public static void listen(Channel channel, Runnable runnable) throws TicktokException {
@@ -17,9 +14,9 @@ public class TickListener {
             com.rabbitmq.client.Channel tickChannel = listen(channel);
             Consumer consumer = consume(runnable, tickChannel);
             tickChannel.basicConsume(channel.getQueue(), true, consumer);
-            log.debug(MessageFormat.format("now listening on queue : {0}", channel.getQueue()));
+            log.debug("now listening on queue : {}", channel.getQueue());
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage());
             throw new TicktokException(e.getMessage());
         }
     }
@@ -29,7 +26,7 @@ public class TickListener {
                     @Override
                     public void handleDelivery(String consumerTag, Envelope envelope,
                                                AMQP.BasicProperties properties, byte[] body) {
-                        log.debug(MessageFormat.format("received tick on: {0}, invoking..", channel.getConnection().getClientProvidedName()));
+                        log.debug("received tick on: {}, invoking..", channel.getConnection().getClientProvidedName());
                         runnable.run();
                     }
                 };
