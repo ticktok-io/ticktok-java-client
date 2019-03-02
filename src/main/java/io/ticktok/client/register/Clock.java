@@ -1,4 +1,4 @@
-package io.ticktok.register;
+package io.ticktok.client.register;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 public class Clock {
-    private Channel channel;
+    private RabbitChannel channel;
     private String id;
     private String schedule;
     private String url;

@@ -1,4 +1,4 @@
-package io.ticktok.rest;
+package io.ticktok.client.rest;
 
 import org.apache.commons.lang3.StringUtils;
 

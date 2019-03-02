@@ -1,10 +1,10 @@
-package io.ticktok.support;
+package io.ticktok.client.support;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.ConnectionFactory;
 import io.javalin.Javalin;
-import io.ticktok.register.Clock;
-import io.ticktok.register.Channel;
+import io.ticktok.client.register.Clock;
+import io.ticktok.client.register.RabbitChannel;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -41,7 +41,7 @@ public class TicktockServiceStub {
                 id("123").
                 schedule(extractBody(body)).
                 url(TickPublisher.QUEUE_HOST).
-                channel(Channel.builder().queue(lastClockRequest.name).uri(validResponse ? "amqp://localhost:5672" : "badUri").build()).
+                channel(RabbitChannel.builder().queue(lastClockRequest.name).uri(validResponse ? "amqp://localhost:5672" : "badUri").build()).
                 name(lastClockRequest.name).
                 build());
     }

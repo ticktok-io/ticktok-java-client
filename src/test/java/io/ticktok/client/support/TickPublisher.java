@@ -1,4 +1,4 @@
-package io.ticktok.support;
+package io.ticktok.client.support;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
