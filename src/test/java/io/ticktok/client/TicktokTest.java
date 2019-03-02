@@ -1,7 +1,7 @@
-package io.ticktok;
+package io.ticktok.client;
 
-import io.ticktok.support.TickPublisher;
-import io.ticktok.support.TicktockServiceStub;
+import io.ticktok.client.support.TickPublisher;
+import io.ticktok.client.support.TicktockServiceStub;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,25 +10,25 @@ import org.junit.jupiter.api.TestInstance;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static io.ticktok.support.TicktockServiceStub.TICKTOK_SERVICE_DOMAIN;
-import static io.ticktok.support.TicktockServiceStub.TOKEN;
+import static io.ticktok.client.support.TicktockServiceStub.TICKTOK_SERVICE_DOMAIN;
+import static io.ticktok.client.support.TicktockServiceStub.TOKEN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
-public class TicktokTest {
+class TicktokTest {
 
     private static final String EVERY_5_SECONDS = "every.5.seconds";
     private static TicktockServiceStub ticktockServiceStub;
 
     @BeforeEach
-    public void init() {
+    void init() {
         ticktockServiceStub = new TicktockServiceStub(9999, true);
     }
 
     @Test
-    public void registerNewClock() {
+    void registerNewClock() {
         register(() -> {}); // schedule
         assertThat(ticktockServiceStub.lastClockRequest.schedule, is(EVERY_5_SECONDS));
         assertThat(ticktockServiceStub.lastClockRequest.name, is("my_clock"));
@@ -39,7 +39,7 @@ public class TicktokTest {
     }
 
     @Test
-    public void invokeOnTick() throws Exception {
+    void invokeOnTick() throws Exception {
         CountDownLatch waitForTickLatch = new CountDownLatch(1);
         register(waitForTickLatch::countDown);
         verifyCallbackWasntDoneSynchronicity(waitForTickLatch);
@@ -53,7 +53,7 @@ public class TicktokTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         ticktockServiceStub.stop();
     }
 

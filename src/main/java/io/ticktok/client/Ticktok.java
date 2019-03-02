@@ -1,9 +1,9 @@
-package io.ticktok;
+package io.ticktok.client;
 
-import io.ticktok.Listener.TickListener;
-import io.ticktok.register.Clock;
-import io.ticktok.rest.RestTicktokClient;
-import io.ticktok.rest.ClockRequest;
+import io.ticktok.client.listener.TickListener;
+import io.ticktok.client.register.Clock;
+import io.ticktok.client.rest.RestTicktokClient;
+import io.ticktok.client.rest.ClockRequest;
 
 public class Ticktok {
 
@@ -30,15 +30,4 @@ public class Ticktok {
         TickListener.listen(clock.getChannel(), runnable);
     }
 
-    public static class TicktokException extends RuntimeException {
-        public TicktokException(String message) {
-            super(message);
-        }
-    }
-
-    public static class TicktokServerException extends RuntimeException {
-        public TicktokServerException(String message) {
-            super(message);
-        }
-    }
 }
