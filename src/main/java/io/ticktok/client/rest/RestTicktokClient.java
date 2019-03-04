@@ -1,10 +1,11 @@
-package io.ticktok.rest;
+package io.ticktok.client.rest;
 
 import com.google.gson.Gson;
-import io.ticktok.Ticktok;
-import io.ticktok.TicktokOptions;
-import io.ticktok.register.Clock;
-import io.ticktok.register.RegisterClockRequest;
+import io.ticktok.client.TicktokException;
+import io.ticktok.client.TicktokOptions;
+import io.ticktok.client.TicktokServerException;
+import io.ticktok.client.register.Clock;
+import io.ticktok.client.register.RegisterClockRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
@@ -12,9 +13,9 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
-import static io.ticktok.TicktokApi.REGISTER_NEW_CLOCK;
-
 public class RestTicktokClient {
+    public static final String REGISTER_NEW_CLOCK = "api/v1/clocks";
+
     private final String token;
     private final String domain;
 
@@ -33,7 +34,7 @@ public class RestTicktokClient {
             validateResponse(httpResponse);
             return result(httpResponse);
         } catch (IOException e) {
-            throw new Ticktok.TicktokException("fail to register clock");
+            throw new TicktokException("fail to register clock");
         }
     }
 
@@ -43,7 +44,7 @@ public class RestTicktokClient {
 
     private void validateResponse(HttpResponse httpResponse) {
         if (httpResponse.getStatusLine().getStatusCode() != 201){
-            throw new Ticktok.TicktokServerException("fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase());
+            throw new TicktokServerException("fail to register clock duo to bad request : " + httpResponse.getStatusLine().getReasonPhrase());
         }
     }
 
