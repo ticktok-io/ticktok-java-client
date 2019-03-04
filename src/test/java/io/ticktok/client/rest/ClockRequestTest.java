@@ -1,27 +1,27 @@
-package io.ticktok.rest;
+package io.ticktok.client.rest;
 
-import io.ticktok.rest.ClockRequest.TicktokInvalidValueException;
+import io.ticktok.client.rest.ClockRequest.TicktokInvalidValueException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ClockRequestTest {
+class ClockRequestTest {
 
     @Test
-    public void shouldThrowExceptionGivenEmptyString(){
+    void shouldThrowExceptionGivenEmptyString(){
         assertThrows(TicktokInvalidValueException.class, () ->
                 ClockRequest.create("", ""));
     }
 
     @Test
-    public void shouldThrowExceptionGivenNull(){
+    void shouldThrowExceptionGivenNull(){
         assertThrows(TicktokInvalidValueException.class, () ->
                 ClockRequest.create(null, null));
     }
 
     @Test
-    public void exceptionMsgShouldBeCorrelatedToCorruptedValue() {
+    void exceptionMsgShouldBeCorrelatedToCorruptedValue() {
         TicktokInvalidValueException exception = assertThrows(TicktokInvalidValueException.class, () ->
                 ClockRequest.create("myName", ""));
         assertEquals(exception.getMessage(), "[schedule] parameter cannot be empty");

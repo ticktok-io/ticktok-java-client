@@ -1,4 +1,4 @@
-package io.ticktok.register;
+package io.ticktok.client;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class Channel {
-    private String queue;
-    private String uri;
+public class TicktokOptions {
+    private String domain;
+    private String token;
 }

@@ -1,10 +1,11 @@
-package io.ticktok.rest;
+package io.ticktok.client.rest;
 
 import com.google.gson.Gson;
-import io.ticktok.Ticktok;
-import io.ticktok.TicktokOptions;
-import io.ticktok.register.Clock;
-import io.ticktok.register.RegisterClockRequest;
+import io.ticktok.client.TicktokException;
+import io.ticktok.client.TicktokOptions;
+import io.ticktok.client.TicktokServerException;
+import io.ticktok.client.register.Clock;
+import io.ticktok.client.register.RegisterClockRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpResponse;
@@ -15,10 +16,10 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-import static io.ticktok.TicktokApi.REGISTER_NEW_CLOCK;
-
 @Slf4j
 public class RestTicktokClient {
+    public static final String REGISTER_NEW_CLOCK = "api/v1/clocks";
+
     private final String token;
     private final String domain;
 
@@ -40,7 +41,7 @@ public class RestTicktokClient {
         } catch (IOException e) {
             String message = "fail to register clock, please follow reason:" + ExceptionUtils.getStackTrace(e);
             log.error(message);
-            throw new Ticktok.TicktokException(message);
+            throw new TicktokException(message);
         }
     }
 
@@ -51,7 +52,7 @@ public class RestTicktokClient {
     private void validateResponse(HttpResponse httpResponse) {
         if (httpResponse.getStatusLine().getStatusCode() != 201){
             String message = logException(httpResponse);
-            throw new Ticktok.TicktokServerException(message);
+            throw new TicktokServerException(message);
         }
     }
 
