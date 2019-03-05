@@ -1,9 +1,11 @@
 package io.ticktok.client.rest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 
+@Slf4j
 public class ClockRequest {
 
     private String name;
@@ -22,8 +24,15 @@ public class ClockRequest {
 
     private static void validateNotBlank(String prop, String propName) {
         if(StringUtils.isBlank(prop)){
-            throw new TicktokInvalidValueException(MessageFormat.format("[{0}] parameter cannot be empty", propName));
+            String message = logException(propName);
+            throw new TicktokInvalidValueException(message);
         }
+    }
+
+    private static String logException(String propName) {
+        String message = MessageFormat.format("[{0}] parameter cannot be empty", propName);
+        log.error(message);
+        return message;
     }
 
     public String getSchedule() {

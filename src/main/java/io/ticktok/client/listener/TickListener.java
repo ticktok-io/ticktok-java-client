@@ -4,6 +4,7 @@ import com.rabbitmq.client.*;
 import io.ticktok.client.TicktokException;
 import io.ticktok.client.register.RabbitChannel;
 import io.ticktok.client.rest.ClockRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 import static java.text.MessageFormat.format;
 
+@Slf4j
 public class TickListener {
 
     public static void listen(RabbitChannel channel, Runnable runnable) throws TicktokException {
@@ -20,6 +22,7 @@ public class TickListener {
             tickChannel = listen(channel);
             Consumer consumer = consume(runnable, tickChannel);
             tickChannel.basicConsume(channel.getQueue(), true, consumer);
+            log.debug("now listening on queue : {}", channel.getQueue());
         } catch (IOException | TimeoutException e) {
             throw new TicktokException(format("Ticktok failed to connect to queue: {0}, with uri: {1}. follow trace: {2}",
                     channel.getQueue(), channel.getUri(), ExceptionUtils.getStackTrace(e)));
