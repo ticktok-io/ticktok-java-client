@@ -2,9 +2,9 @@ package io.ticktok.client.support;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.ConnectionFactory;
-import io.javalin.Javalin;
 import io.ticktok.client.register.Clock;
 import io.ticktok.client.register.RabbitChannel;
+import org.rockm.blink.BlinkServer;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -16,18 +16,26 @@ public class TicktockServiceStub {
     public static final String TOKEN = "my_token";
 
     public ClockRequest lastClockRequest;
-    private final Javalin app;
+    private final BlinkServer app;
 
-    public TicktockServiceStub(int port, boolean validResponse) {
-        app = Javalin.create().disableStartupBanner().enableCaseSensitiveUrls().start(port).post("/api/v1/clocks", ctx -> {
-            validateToken(ctx.queryParam("access_token"));
-            lastClockRequest = new Gson().fromJson(ctx.body(), ClockRequest.class);
-            createQueueFor();
-            ctx.result(createClockFrom(ctx.body(), validResponse)).status(201);
-        });
+    public TicktockServiceStub(int port, boolean validResponse) throws IOException {
+        app = new BlinkServer(port) {{
+            post("/api/v1/clocks", (req, res) -> {
+                validateToken(req.param("access_token"));
+                lastClockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
+                try {
+                    createQueueFor();
+                } catch (TimeoutException | IOException e) {
+                    res.status(500);
+                    return "Fail to create channel";
+                }
+                res.status(201);
+                return createClockFrom(req.body(), validResponse);
+            });
+        }};
     }
 
-    private void createQueueFor() throws IOException, TimeoutException {
+    private void createQueueFor() throws TimeoutException, IOException {
         com.rabbitmq.client.Channel channel = new ConnectionFactory().newConnection().createChannel();
         channel.queueDeclare(lastClockRequest.name, false, false, false, null);
     }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +24,7 @@ class TicktokTest {
     private static TicktockServiceStub ticktockServiceStub;
 
     @BeforeEach
-    void init() {
+    void init() throws IOException {
         ticktockServiceStub = new TicktockServiceStub(9999, true);
     }
 

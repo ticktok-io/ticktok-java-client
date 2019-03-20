@@ -4,7 +4,7 @@
 
     <groupId>io.ticktok</groupId>
     <artifactId>ticktok-java-client</artifactId>
-    <version>0.2.0</version>
+    <version>0.4.1</version>
     <packaging>jar</packaging>
 
     <name>Ticktok Java client</name>
@@ -15,17 +15,20 @@
         <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>bintray-rockem-maven</id>
+            <name>bintray-plugins</name>
+            <url>https://dl.bintray.com/rockem/maven</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.20</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.11.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -43,9 +46,9 @@
             <version>4.5.6</version>
         </dependency>
         <dependency>
-            <groupId>io.javalin</groupId>
-            <artifactId>javalin</artifactId>
-            <version>2.4.0</version>
+            <groupId>org.rockem</groupId>
+            <artifactId>blink-http</artifactId>
+            <version>0.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -58,6 +61,12 @@
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
             <version>5.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

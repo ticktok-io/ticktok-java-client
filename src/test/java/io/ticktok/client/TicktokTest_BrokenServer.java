@@ -4,6 +4,8 @@ import io.ticktok.client.rest.ClockRequest;
 import io.ticktok.client.support.TicktockServiceStub;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static io.ticktok.client.support.TicktockServiceStub.TICKTOK_SERVICE_DOMAIN;
 import static io.ticktok.client.support.TicktockServiceStub.TOKEN;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +24,7 @@ class TicktokTest_BrokenServer {
     }
 
     @Test
-    void failOnQueueDown() {
+    void failOnQueueDown() throws IOException {
         TicktockServiceStub stub =  new TicktockServiceStub(9999, false);
         assertThrows(ClockRequest.TicktokInvalidValueException.class, () -> register(() -> {}));
         stub.stop();
