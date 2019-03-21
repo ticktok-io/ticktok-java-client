@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.rockem</groupId>
             <artifactId>blink-http</artifactId>
-            <version>0.5</version>
+            <version>0.5.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
