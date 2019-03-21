@@ -1,11 +1,13 @@
 package io.ticktok.client.rest;
 
-import io.javalin.Javalin;
 import io.ticktok.client.TicktokException;
 import io.ticktok.client.TicktokOptions;
 import io.ticktok.client.TicktokServerException;
 import io.ticktok.client.register.Clock;
 import org.junit.jupiter.api.Test;
+import org.rockm.blink.BlinkServer;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -26,13 +28,18 @@ class RestTicktokClientTest {
     }
 
     @Test
-    void catchBadRequestGivenInValidSchedule(){
-        Javalin app = badRequestStub();
+    void catchBadRequestGivenInValidSchedule() throws IOException {
+        BlinkServer stub = badRequestStub();
         assertThrows(TicktokServerException.class, () -> buildRegisterRequest("-"));
-        app.stop();
+        stub.stop();
     }
 
-    private Javalin badRequestStub() {
-        return Javalin.create().enableCaseSensitiveUrls().start(1212).post("/api/v1/clocks", ctx -> ctx.status(400));
+    private BlinkServer badRequestStub() throws IOException {
+        return new BlinkServer(1212) {{
+            post("/api/v1/clocks", (req, res) -> {
+                res.status(400);
+                return "Bad Request";
+            });
+        }};
     }
 }
