@@ -17,9 +17,8 @@
 
     <repositories>
         <repository>
-            <id>bintray-rockem-maven</id>
-            <name>bintray-plugins</name>
-            <url>https://dl.bintray.com/rockem/maven</url>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com/</url>
         </repository>
     </repositories>
 
@@ -47,8 +46,8 @@
         </dependency>
         <dependency>
             <groupId>org.rockem</groupId>
-            <artifactId>blink-http</artifactId>
-            <version>0.5.0</version>
+            <artifactId>blink-java</artifactId>
+            <version>0.5.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
