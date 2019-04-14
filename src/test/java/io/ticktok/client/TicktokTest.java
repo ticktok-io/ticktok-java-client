@@ -1,51 +1,59 @@
 package io.ticktok.client;
 
 import io.ticktok.client.support.TickPublisher;
-import io.ticktok.client.support.TicktockServiceStub;
+import io.ticktok.client.support.TicktockServerStub;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static io.ticktok.client.support.TicktockServiceStub.TICKTOK_SERVICE_DOMAIN;
-import static io.ticktok.client.support.TicktockServiceStub.TOKEN;
+import static io.ticktok.client.Ticktok.options;
+import static io.ticktok.client.support.TicktockServerStub.DOMAIN;
+import static io.ticktok.client.support.TicktockServerStub.TOKEN;
+import static java.time.Duration.ofSeconds;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
 class TicktokTest {
 
-    private static final String EVERY_5_SECONDS = "every.5.seconds";
-    private static TicktockServiceStub ticktockServiceStub;
+    private static final String SCHEDULE = "every.5.seconds";
+    public static final String NAME = "my_clock";
+
+    private final Ticktok ticktok = new Ticktok(options().domain(DOMAIN).token(TOKEN));
+    private TicktockServerStub server;
 
     @BeforeEach
     void init() throws IOException {
-        ticktockServiceStub = new TicktockServiceStub(9999, true);
+        server = new TicktockServerStub(9999, true);
     }
 
     @Test
     void registerNewClock() {
-        register(() -> {}); // schedule
-        assertThat(ticktockServiceStub.lastClockRequest.schedule, is(EVERY_5_SECONDS));
-        assertThat(ticktockServiceStub.lastClockRequest.name, is("my_clock"));
+        ticktok.schedule("kuku", "every.11.seconds");
+        assertThat(server.lastClockRequest.getName(), is("kuku"));
+        assertThat(server.lastClockRequest.getSchedule(), is("every.1.seconds"));
     }
 
-    private void register(Runnable runnable) {
-        new Ticktok(new TicktokOptions(TICKTOK_SERVICE_DOMAIN, TOKEN)).newClock("my_clock").on(EVERY_5_SECONDS).invoke(runnable);
+    @Test
+    void failOnInvalidSchedule() {
+        assertThrows(TicktokException.class, () -> ticktok.schedule("kuku", "invalid"));
     }
 
     @Test
     void invokeOnTick() throws Exception {
         CountDownLatch waitForTickLatch = new CountDownLatch(1);
-        register(waitForTickLatch::countDown);
+        ticktok.schedule(NAME, SCHEDULE).onTick(waitForTickLatch::countDown);
         verifyCallbackWasntDoneSynchronicity(waitForTickLatch);
         TickPublisher.publish();
-        waitForTickLatch.await(3, TimeUnit.SECONDS);
+        assertTimeoutPreemptively(ofSeconds(3), (Executable) waitForTickLatch::await);
         // pass
     }
 
@@ -55,7 +63,7 @@ class TicktokTest {
 
     @AfterEach
     void tearDown() {
-        ticktockServiceStub.stop();
+        server.stop();
     }
 
 }

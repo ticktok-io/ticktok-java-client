@@ -11,7 +11,7 @@ public class Ticktok {
     private String name;
     private String schedule;
 
-    public Ticktok(TicktokOptions options){
+    public Ticktok(TicktokOptions options) {
         this.options = options;
     }
 
@@ -20,14 +20,27 @@ public class Ticktok {
         return this;
     }
 
-    public Ticktok on(String schedule){
+    public Ticktok on(String schedule) {
         this.schedule = schedule;
         return this;
     }
 
-    public void invoke(Runnable runnable){
-        Clock clock = new RestTicktokClient(this.options).register(ClockRequest.create(this.name, this.schedule));
-        TickListener.listen(clock.getChannel(), runnable);
+    public void invoke(Runnable runnable) {
+//        Clock clock = new RestTicktokClient(this.options).register(ClockRequest.create(this.name, this.schedule));
+//        TickListener.listen(clock.getChannel(), runnable);
+    }
+
+    public static TicktokOptions options() {
+        return new TicktokOptions();
+    }
+
+    public static ClockDetails clock() {
+        return new ClockDetails();
+    }
+
+    public Clock schedule(String name, String schedule) {
+        new RestTicktokClient(this.options).register(new ClockRequest(name, schedule));
+        return new Clock();
     }
 
 }

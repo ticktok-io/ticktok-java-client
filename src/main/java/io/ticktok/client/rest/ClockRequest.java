@@ -1,20 +1,17 @@
 package io.ticktok.client.rest;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 
 @Slf4j
+@AllArgsConstructor
 public class ClockRequest {
 
     private String name;
     private String schedule;
-
-    private ClockRequest(String name, String schedule) {
-        this.name = name;
-        this.schedule = schedule;
-    }
 
     public static ClockRequest create(String name, String schedule) {
         validateNotBlank(name, "name");

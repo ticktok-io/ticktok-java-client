@@ -1,15 +1,23 @@
 package io.ticktok.client;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@EqualsAndHashCode
 @Getter
-@Setter
+@EqualsAndHashCode
+@ToString
 public class TicktokOptions {
     private String domain;
     private String token;
+
+    public TicktokOptions domain(String domain) {
+        this.domain = domain;
+        return this;
+    }
+
+    public TicktokOptions token(String token) {
+        this.token = token;
+        return this;
+    }
 }

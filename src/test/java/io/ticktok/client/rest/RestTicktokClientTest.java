@@ -1,5 +1,6 @@
 package io.ticktok.client.rest;
 
+import io.ticktok.client.Ticktok;
 import io.ticktok.client.TicktokException;
 import io.ticktok.client.TicktokOptions;
 import io.ticktok.client.TicktokServerException;
@@ -19,7 +20,7 @@ class RestTicktokClientTest {
     }
 
     private Clock buildRegisterRequest(String schedule) {
-        return new RestTicktokClient(new TicktokOptions("http://localhost:1212", "my_token")).register(ClockRequest.create("clock_name", schedule));
+        return new RestTicktokClient(Ticktok.options().domain("http://localhost:1212").token("my_token")).register(ClockRequest.create("clock_name", schedule));
     }
 
     @Test

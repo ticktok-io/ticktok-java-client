@@ -9,7 +9,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
 import java.net.URI;
-import java.text.MessageFormat;
 import java.util.concurrent.TimeoutException;
 
 import static java.text.MessageFormat.format;
@@ -54,4 +53,5 @@ public class TickListener {
         }
         return factory.newConnection();
     }
+
 }
