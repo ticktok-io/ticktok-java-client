@@ -1,19 +1,17 @@
 package io.ticktok.client;
 
-import io.ticktok.client.support.TickPublisher;
-import io.ticktok.client.support.TicktockServerStub;
+import io.ticktok.client.support.ServerStub;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.function.Executable;
 
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 import static io.ticktok.client.Ticktok.options;
-import static io.ticktok.client.support.TicktockServerStub.DOMAIN;
-import static io.ticktok.client.support.TicktockServerStub.TOKEN;
+import static io.ticktok.client.support.ServerStub.DOMAIN;
+import static io.ticktok.client.support.ServerStub.TOKEN;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -28,31 +26,31 @@ class TicktokTest {
     public static final String NAME = "my_clock";
 
     private final Ticktok ticktok = new Ticktok(options().domain(DOMAIN).token(TOKEN));
-    private TicktockServerStub server;
+    private ServerStub server;
 
     @BeforeEach
-    void init() throws IOException {
-        server = new TicktockServerStub(9999, true);
+    void init() throws Exception {
+        server = new ServerStub(9999, true);
     }
 
     @Test
     void registerNewClock() {
-        ticktok.schedule("kuku", "every.11.seconds");
+        ticktok.schedule("kuku", "every.11.seconds", null);
         assertThat(server.lastClockRequest.getName(), is("kuku"));
-        assertThat(server.lastClockRequest.getSchedule(), is("every.1.seconds"));
+        assertThat(server.lastClockRequest.getSchedule(), is("every.11.seconds"));
     }
 
     @Test
     void failOnInvalidSchedule() {
-        assertThrows(TicktokException.class, () -> ticktok.schedule("kuku", "invalid"));
+        assertThrows(TicktokException.class, () -> ticktok.schedule("kuku", "invalid", null));
     }
 
     @Test
     void invokeOnTick() throws Exception {
         CountDownLatch waitForTickLatch = new CountDownLatch(1);
-        ticktok.schedule(NAME, SCHEDULE).onTick(waitForTickLatch::countDown);
+        ticktok.schedule(NAME, SCHEDULE, waitForTickLatch::countDown);
         verifyCallbackWasntDoneSynchronicity(waitForTickLatch);
-        TickPublisher.publish();
+        server.tick();
         assertTimeoutPreemptively(ofSeconds(3), (Executable) waitForTickLatch::await);
         // pass
     }
@@ -62,7 +60,7 @@ class TicktokTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws Exception {
         server.stop();
     }
 

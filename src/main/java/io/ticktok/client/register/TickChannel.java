@@ -9,7 +9,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class RabbitChannel {
+public class TickChannel {
     private String queue;
     private String uri;
 }

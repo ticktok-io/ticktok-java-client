@@ -27,7 +27,6 @@ public class Ticktok {
 
     public void invoke(Runnable runnable) {
 //        Clock clock = new RestTicktokClient(this.options).register(ClockRequest.create(this.name, this.schedule));
-//        TickListener.listen(clock.getChannel(), runnable);
     }
 
     public static TicktokOptions options() {
@@ -38,9 +37,9 @@ public class Ticktok {
         return new ClockDetails();
     }
 
-    public Clock schedule(String name, String schedule) {
-        new RestTicktokClient(this.options).register(new ClockRequest(name, schedule));
-        return new Clock();
+    public void schedule(String name, String schedule, TickConsumer consumer) {
+        Clock clock = new RestTicktokClient(this.options).register(new ClockRequest(name, schedule));
+        new TickListener().listen(clock.getChannel(), consumer);
     }
 
 }
