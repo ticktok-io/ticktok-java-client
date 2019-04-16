@@ -1,4 +1,4 @@
-package io.ticktok.client.server;
+package test.io.ticktok.client.server;
 
 import io.ticktok.client.TicktokException;
 

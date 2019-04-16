@@ -2,9 +2,9 @@ package io.ticktok.client;
 
 import io.ticktok.client.tick.TickConsumer;
 import io.ticktok.client.tick.TickListener;
-import io.ticktok.client.register.Clock;
-import io.ticktok.client.server.RestClockCreator;
-import io.ticktok.client.server.ClockRequest;
+import test.io.ticktok.client.server.Clock;
+import test.io.ticktok.client.server.RestClockCreator;
+import test.io.ticktok.client.server.ClockRequest;
 
 public class Ticktok {
 

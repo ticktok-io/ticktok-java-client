@@ -1,4 +1,4 @@
-package io.ticktok.client.server;
+package test.io.ticktok.client.server;
 
 import io.ticktok.client.Ticktok;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class RestClockCreatorTest {
 
     private void createClockWithSchedule(String schedule) {
         new RestClockCreator(Ticktok.options().domain("http://localhost:" + PORT).token("my_token"))
-                .create(ClockRequest.create("my-pupu-clock", schedule));
+                .create(new ClockRequest("my-pupu-clock", schedule));
     }
 
     @Test

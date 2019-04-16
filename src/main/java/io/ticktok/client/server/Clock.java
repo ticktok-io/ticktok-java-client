@@ -1,4 +1,4 @@
-package io.ticktok.client.register;
+package test.io.ticktok.client.server;
 
 import lombok.*;
 

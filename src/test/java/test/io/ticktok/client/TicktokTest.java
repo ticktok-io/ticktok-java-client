@@ -1,6 +1,8 @@
-package io.ticktok.client;
+package test.io.ticktok.client;
 
-import io.ticktok.client.support.ServerStub;
+import io.ticktok.client.Ticktok;
+import io.ticktok.client.TicktokException;
+import test.io.ticktok.client.support.ServerStub;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,9 +11,8 @@ import org.junit.jupiter.api.function.Executable;
 
 import java.util.concurrent.CountDownLatch;
 
-import static io.ticktok.client.Ticktok.options;
-import static io.ticktok.client.support.ServerStub.DOMAIN;
-import static io.ticktok.client.support.ServerStub.TOKEN;
+import static test.io.ticktok.client.support.ServerStub.DOMAIN;
+import static test.io.ticktok.client.support.ServerStub.TOKEN;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -25,7 +26,7 @@ class TicktokTest {
     private static final String SCHEDULE = "every.5.seconds";
     public static final String NAME = "my_clock";
 
-    private final Ticktok ticktok = new Ticktok(options().domain(DOMAIN).token(TOKEN));
+    private final Ticktok ticktok = new Ticktok(Ticktok.options().domain(DOMAIN).token(TOKEN));
     private ServerStub server;
 
     @BeforeEach
