@@ -1,6 +1,6 @@
-package io.ticktok.client.rest;
+package io.ticktok.client.server;
 
-import io.ticktok.client.rest.ClockRequest.TicktokInvalidValueException;
+import io.ticktok.client.server.ClockRequest.TicktokInvalidValueException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

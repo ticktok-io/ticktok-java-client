@@ -1,4 +1,4 @@
-package io.ticktok.client.rest;
+package io.ticktok.client.server;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

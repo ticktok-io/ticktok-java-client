@@ -5,8 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.ticktok.client.register.Clock;
-import io.ticktok.client.register.TickChannel;
-import io.ticktok.client.rest.ClockRequest;
+import io.ticktok.client.server.ClockRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.rockm.blink.BlinkServer;
@@ -67,7 +66,7 @@ public class ServerStub {
                 name(request.getName()).
                 schedule(request.getSchedule()).
                 url(DOMAIN + "/api/v1/clocks/" + CLOCK_ID).
-                channel(TickChannel.builder().queue(QUEUE).uri("amqp://localhost:5672").build()).
+                channel(Clock.TickChannel.builder().queue(QUEUE).uri("amqp://localhost:5672").build()).
                 build());
     }
 

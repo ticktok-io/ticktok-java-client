@@ -1,4 +1,4 @@
-package io.ticktok.client;
+package io.ticktok.client.tick;
 
 public interface TickConsumer {
 

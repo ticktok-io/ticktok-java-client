@@ -1,9 +1,10 @@
 package io.ticktok.client;
 
-import io.ticktok.client.listener.TickListener;
+import io.ticktok.client.tick.TickConsumer;
+import io.ticktok.client.tick.TickListener;
 import io.ticktok.client.register.Clock;
-import io.ticktok.client.rest.RestTicktokClient;
-import io.ticktok.client.rest.ClockRequest;
+import io.ticktok.client.server.RestClockCreator;
+import io.ticktok.client.server.ClockRequest;
 
 public class Ticktok {
 
@@ -26,7 +27,7 @@ public class Ticktok {
     }
 
     public void invoke(Runnable runnable) {
-//        Clock clock = new RestTicktokClient(this.options).register(ClockRequest.create(this.name, this.schedule));
+//        Clock clock = new RestClockCreator(this.options).create(ClockRequest.create(this.name, this.schedule));
     }
 
     public static TicktokOptions options() {
@@ -38,7 +39,7 @@ public class Ticktok {
     }
 
     public void schedule(String name, String schedule, TickConsumer consumer) {
-        Clock clock = new RestTicktokClient(this.options).register(new ClockRequest(name, schedule));
+        Clock clock = new RestClockCreator(this.options).create(new ClockRequest(name, schedule));
         new TickListener().listen(clock.getChannel(), consumer);
     }
 

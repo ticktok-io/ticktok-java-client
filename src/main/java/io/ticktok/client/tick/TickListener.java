@@ -1,10 +1,9 @@
-package io.ticktok.client.listener;
+package io.ticktok.client.tick;
 
 import com.rabbitmq.client.*;
-import io.ticktok.client.TickConsumer;
 import io.ticktok.client.TicktokException;
-import io.ticktok.client.register.TickChannel;
-import io.ticktok.client.rest.ClockRequest;
+import io.ticktok.client.register.Clock;
+import io.ticktok.client.server.ClockRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -17,16 +16,16 @@ import static java.text.MessageFormat.format;
 @Slf4j
 public class TickListener {
 
-    public void listen(TickChannel channel, TickConsumer tickConsumer) {
-        com.rabbitmq.client.Channel tickChannel;
+    public void listen(Clock.TickChannel tickChannel, TickConsumer tickConsumer) {
+        Channel channel = null;
         try {
-            tickChannel = listen(channel);
-            Consumer consumer = consume(tickConsumer, tickChannel);
-            tickChannel.basicConsume(channel.getQueue(), true, consumer);
-            log.debug("now listening on queue : {}", channel.getQueue());
+            channel = listen(tickChannel);
+            Consumer consumer = consume(tickConsumer, channel);
+            channel.basicConsume(tickChannel.getQueue(), true, consumer);
+            log.debug("now listening on queue : {}", tickChannel.getQueue());
         } catch (IOException | TimeoutException e) {
             throw new TicktokException(format("Ticktok failed to connect to queue: {0}, with uri: {1}. follow trace: {2}",
-                    channel.getQueue(), channel.getUri(), ExceptionUtils.getStackTrace(e)));
+                    tickChannel.getQueue(), tickChannel.getUri(), ExceptionUtils.getStackTrace(e)));
         }
     }
 
@@ -40,12 +39,12 @@ public class TickListener {
         };
     }
 
-    private com.rabbitmq.client.Channel listen(TickChannel channel) throws IOException, TimeoutException {
+    private com.rabbitmq.client.Channel listen(Clock.TickChannel channel) throws IOException, TimeoutException {
         Connection connection = createConnection(channel);
         return connection.createChannel();
     }
 
-    private Connection createConnection(TickChannel channel) throws IOException, TimeoutException {
+    private Connection createConnection(Clock.TickChannel channel) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         try {
             factory.setUri(URI.create(channel.getUri()));

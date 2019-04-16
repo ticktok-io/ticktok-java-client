@@ -1,6 +1,6 @@
 package io.ticktok.client;
 
-import io.ticktok.client.rest.ClockRequest;
+import io.ticktok.client.server.ClockRequest;
 import io.ticktok.client.support.ServerStub;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
