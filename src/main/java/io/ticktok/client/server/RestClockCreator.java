@@ -1,4 +1,4 @@
-package test.io.ticktok.client.server;
+package io.ticktok.client.server;
 
 import com.google.gson.Gson;
 import io.ticktok.client.TicktokOptions;

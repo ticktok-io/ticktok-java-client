@@ -1,4 +1,4 @@
-package test.io.ticktok.client.server;
+package io.ticktok.client.server;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

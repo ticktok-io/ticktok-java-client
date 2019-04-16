@@ -1,7 +1,7 @@
 package io.ticktok.client.tick;
 
 import com.rabbitmq.client.*;
-import test.io.ticktok.client.server.Clock;
+import io.ticktok.client.server.Clock;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
@@ -12,9 +12,8 @@ import static java.text.MessageFormat.format;
 public class TickListener {
 
     public void listen(Clock.TickChannel tickChannel, TickConsumer tickConsumer) {
-        Channel channel = null;
         try {
-            channel = createChannelFor(tickChannel.getUri());
+            Channel channel = createChannelFor(tickChannel.getUri());
             channel.basicConsume(tickChannel.getQueue(), true, consumerFor(channel, tickConsumer));
         } catch (Exception e) {
             throw new ChannelException(format("Ticktok failed to connect to queue: {0}, with uri: {1}",
