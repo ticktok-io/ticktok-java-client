@@ -1,6 +1,10 @@
 package test.io.ticktok.client.server;
 
 import io.ticktok.client.Ticktok;
+import io.ticktok.client.server.ClockRequest;
+import io.ticktok.client.server.ConnectionException;
+import io.ticktok.client.server.FailToCreateClockException;
+import io.ticktok.client.server.RestClockCreator;
 import org.junit.jupiter.api.Test;
 import org.rockm.blink.BlinkServer;
 
@@ -13,7 +17,7 @@ class RestClockCreatorTest {
     public static final int PORT = 1212;
 
     @Test
-    void failOnServiceNotAvailable(){
+    void failOnServiceNotAvailable() {
         assertThrows(ConnectionException.class, () -> createClockWithSchedule("every.5.seconds"));
     }
 

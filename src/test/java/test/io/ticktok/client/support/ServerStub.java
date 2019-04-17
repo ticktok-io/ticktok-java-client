@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import io.ticktok.client.server.Clock;
 import io.ticktok.client.server.ClockRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

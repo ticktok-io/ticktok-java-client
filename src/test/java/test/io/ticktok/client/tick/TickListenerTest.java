@@ -1,8 +1,8 @@
 package test.io.ticktok.client.tick;
 
+import io.ticktok.client.server.Clock;
 import io.ticktok.client.tick.ChannelException;
 import io.ticktok.client.tick.TickListener;
-import test.io.ticktok.client.server.Clock;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
