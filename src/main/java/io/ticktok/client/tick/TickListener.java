@@ -4,19 +4,24 @@ import com.rabbitmq.client.*;
 import io.ticktok.client.server.Clock;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.TimeoutException;
 
 import static java.text.MessageFormat.format;
 
 @Slf4j
 public class TickListener {
 
+    private Connection connection;
+    private Channel channel;
+
     public void listen(Clock.TickChannel tickChannel, TickConsumer tickConsumer) {
         try {
-            Channel channel = createChannelFor(tickChannel.getUri());
+            channel = createChannelFor(tickChannel.getUri());
             channel.basicConsume(tickChannel.getQueue(), true, consumerFor(channel, tickConsumer));
         } catch (Exception e) {
-            throw new ChannelException(format("Ticktok failed to connect to queue: {0}, with uri: {1}",
+            throw new ChannelException(format("Failed to connect to queue: {0}, with uri: {1}",
                     tickChannel.getQueue(), tickChannel.getUri()), e);
         }
     }
@@ -24,7 +29,7 @@ public class TickListener {
     private Channel createChannelFor(String uri) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(URI.create(uri));
-        final Connection connection = factory.newConnection();
+        connection = factory.newConnection();
         return connection.createChannel();
     }
 
@@ -36,5 +41,35 @@ public class TickListener {
                 runnable.consume();
             }
         };
+    }
+
+    public void disconnect() {
+        closeChannel();
+        closeConnection();
+    }
+
+    private void closeChannel() {
+        try {
+            if(channel != null) {
+                channel.close();
+            }
+        } catch (IOException | TimeoutException e) {
+            //ignore
+        } finally {
+            channel = null;
+        }
+    }
+
+    private void closeConnection() {
+        try {
+            if(connection != null) {
+                connection.close();
+            }
+        } catch (IOException e) {
+            //ignore
+        } finally {
+            connection = null;
+        }
+
     }
 }

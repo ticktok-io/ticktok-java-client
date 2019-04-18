@@ -29,7 +29,7 @@ public class ServerStub {
 
 
     public ServerStub(int port, boolean validResponse) throws Exception {
-        createQueueFor();
+        createQueue();
         app = new BlinkServer(port) {{
             post("/api/v1/clocks", (req, res) -> {
                 lastClockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
@@ -46,7 +46,7 @@ public class ServerStub {
         }};
     }
 
-    private void createQueueFor() throws TimeoutException, IOException {
+    private void createQueue() throws TimeoutException, IOException {
         connection = new ConnectionFactory().newConnection();
         channel = connection.createChannel();
         channel.queueDeclare(QUEUE, false, false, false, null);

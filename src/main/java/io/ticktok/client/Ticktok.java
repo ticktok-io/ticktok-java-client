@@ -8,6 +8,7 @@ import io.ticktok.client.tick.TickListener;
 
 public class Ticktok {
 
+    private final TickListener tickListener = new TickListener();
     private TicktokOptions options;
 
     public Ticktok(TicktokOptions options) {
@@ -20,7 +21,10 @@ public class Ticktok {
 
     public void schedule(String name, String schedule, TickConsumer consumer) {
         Clock clock = new RestClockCreator(this.options).create(new ClockRequest(name, schedule));
-        new TickListener().listen(clock.getChannel(), consumer);
+        tickListener.listen(clock.getChannel(), consumer);
     }
 
+    public void disconnect() {
+       tickListener.disconnect();
+    }
 }
