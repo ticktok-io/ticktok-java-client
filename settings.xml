@@ -10,7 +10,7 @@
         </server>
     </servers>
 
-    <profiles>
+<!--    <profiles>
         <profile>
             <repositories>
                 <repository>
@@ -37,6 +37,6 @@
     </profiles>
     <activeProfiles>
         <activeProfile>bintray</activeProfile>
-    </activeProfiles>
+    </activeProfiles>-->
 
 </settings>

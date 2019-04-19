@@ -1,14 +1,17 @@
 version: 2
+
+defaults: &defaults
+  working_directory: ~/repo
+  environment:
+    JVM_OPTS: -Xmx3200m
+    TERM: dumb
+  docker:
+    - image: circleci/openjdk:8-jdk
+    - image: rabbitmq:3
+
 jobs:
-  build:
-    docker:
-      - image: circleci/openjdk:8u171-jdk
-      - image: rabbitmq:3.7
-
-    environment:
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
-
+  test:
+    <<: *defaults
     steps:
       - checkout
 
@@ -22,8 +25,30 @@ jobs:
             - ~/.m2
           key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
+  publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
       - run: mvn -s settings.xml package
-
       - run:
-          name: destribute to jcneter
-          command: .circleci/destribute_to_jcenter.sh
+          name: Destribute to jcneter
+          command: mvn -s settings.xml deploy -Dbintray.user=$BINTRAY_USER -Dbintray.key=$BINTRAY_KEY
+
+workflows:
+  version: 2
+  ticktok-maven:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /^v.*/
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+
