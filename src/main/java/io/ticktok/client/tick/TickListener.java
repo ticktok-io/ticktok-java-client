@@ -6,19 +6,21 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.TimeoutException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 import static java.text.MessageFormat.format;
 
-@Slf4j
 public class TickListener {
 
     private Connection connection;
     private Channel channel;
+    private final Object lock = new Object();
 
     public void listen(Clock.TickChannel tickChannel, TickConsumer tickConsumer) {
         try {
-            channel = createChannelFor(tickChannel.getUri());
+            createChannelFor(tickChannel.getUri());
             channel.basicConsume(tickChannel.getQueue(), true, consumerFor(channel, tickConsumer));
         } catch (Exception e) {
             throw new ChannelException(format("Failed to connect to queue: {0}, with uri: {1}",
@@ -26,19 +28,27 @@ public class TickListener {
         }
     }
 
-    private Channel createChannelFor(String uri) throws Exception {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(URI.create(uri));
-        connection = factory.newConnection();
-        return connection.createChannel();
+    private void createChannelFor(String uri) throws Exception {
+        synchronized (lock) {
+            if(connection == null) {
+                connection = createConnectionFactoryFor(uri).newConnection();
+                channel = connection.createChannel();
+            }
+        }
     }
 
-    private Consumer consumerFor(Channel channel, TickConsumer runnable) {
+    private ConnectionFactory createConnectionFactoryFor(String uri) throws URISyntaxException, NoSuchAlgorithmException, KeyManagementException {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setUri(URI.create(uri));
+        return factory;
+    }
+
+    private Consumer consumerFor(Channel channel, final TickConsumer consumer) {
         return new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope,
                                        AMQP.BasicProperties properties, byte[] body) {
-                runnable.consume();
+                consumer.consume();
             }
         };
     }
@@ -53,7 +63,7 @@ public class TickListener {
             if(channel != null) {
                 channel.close();
             }
-        } catch (IOException | TimeoutException e) {
+        } catch (Exception e) {
             //ignore
         } finally {
             channel = null;
