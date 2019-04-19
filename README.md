@@ -1,6 +1,7 @@
 # Ticktok Java client
 [![CircleCI](https://circleci.com/gh/ticktok-io/ticktok-java-client.svg?style=svg)](https://circleci.com/gh/ticktok-io/ticktok-java-client)
-[![License](http://img.shields.io/:license-apache2.0-blue.svg)](http://doge.mit-license.org)
+[![Release](https://img.shields.io/github/release/ticktok-io/ticktok.js.svg)](https://github.com/ticktok-io/ticktok-java-client/releases/tag)
+[![License](http://img.shields.io/:license-apache2.0-red.svg)](http://doge.mit-license.org)
 
 This is the official Java sdk for *[Ticktok.io](https://ticktok.io/)* service.
 
