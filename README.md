@@ -1,52 +1,60 @@
 # Ticktok Java client
 [![CircleCI](https://circleci.com/gh/ticktok-io/ticktok-java-client.svg?style=svg)](https://circleci.com/gh/ticktok-io/ticktok-java-client)
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
+[![Release](https://img.shields.io/github/release/ticktok-io/ticktok.js.svg)](https://github.com/ticktok-io/ticktok-java-client/releases/tag)
+[![License](http://img.shields.io/:license-apache2.0-red.svg)](http://doge.mit-license.org)
 
-**Ticktok-Java-Client** is the official java sdk for *[Ticktok.io](https://ticktok.io/)* service.
+This is the official Java sdk for *[Ticktok.io](https://ticktok.io/)* service.
 
-## Requirements
-```
-  - jdk8
-```
 
-## Import sdk
+## Quick Start
+
+### Import sdk
 artifacts available @ [*bintray repositories*](https://bintray.com/ticktok-io/maven/ticktok-java-client)
 
 ### Gradle
 ```
-dependencies {
-  ...
-    compile 'io.ticktok:ticktok-java-client:<version>'
+repositories {
+    jcenter()
 }
 
+... 
+
+dependencies {
+  ...
+    compile 'io.ticktok:ticktok-java-client:0.4.0'
+}
 ```
 
 ### Maven
-```
-<dependency>
-  <groupId>io.ticktok</groupId>
-  <artifactId>ticktok-java-client</artifactId>
-  <version>_version_</version>
-</dependency>
+```xml
+<repositories>
+    ...
+    <repository>
+        <id>jcenter</id>
+        <url>https://jcenter.bintray.com/</url>
+    </repository>
+</repositories>
+
+...
+
+<dependencies>
+    ...
+    <dependency>
+        <groupId>io.ticktok</groupId>
+        <artifactId>ticktok-java-client</artifactId>
+        <version>0.4.0</version>
+    </dependency>
+</dependencies>
+
 ```
 
-## Example
+### Example
 ```java
-new Ticktok(new TicktokOptions("<Ticktok-Domain>", "<Ticktok token>")).
-        newClock("my_clock_name").
-        on("every.5.seconds").
-        invoke(() -> {
-            System.out.print("tick message by defined schedule");
-        });
-}
+new Ticktok(options().domain("<ticktok-domain>").token("<ticktok-token>")).
+    schedule("my first clock", "every.5.seconds", () -> {
+        System.out.print("tick me baby one more time");
+    });
 ```
 
-## Related
-[Ticktok.io](https://github.com/ticktok-io/ticktok.io) - ticktok.io service
-
-## License
-MIT
-
------
-
+##Community
 Come & chat with us on [Slack](https://ticktokio.slack.com/messages/CF0DYKN0Y/details/)

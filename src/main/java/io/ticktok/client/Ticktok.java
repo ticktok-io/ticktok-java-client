@@ -1,33 +1,30 @@
 package io.ticktok.client;
 
-import io.ticktok.client.listener.TickListener;
-import io.ticktok.client.register.Clock;
-import io.ticktok.client.rest.RestTicktokClient;
-import io.ticktok.client.rest.ClockRequest;
+import io.ticktok.client.server.Clock;
+import io.ticktok.client.server.ClockRequest;
+import io.ticktok.client.server.RestClockCreator;
+import io.ticktok.client.tick.TickConsumer;
+import io.ticktok.client.tick.TickListener;
 
 public class Ticktok {
 
+    private final TickListener tickListener = new TickListener();
     private TicktokOptions options;
-    private String name;
-    private String schedule;
 
-    public Ticktok(TicktokOptions options){
+    public Ticktok(TicktokOptions options) {
         this.options = options;
     }
 
-    public Ticktok newClock(String name) {
-        this.name = name;
-        return this;
+    public static TicktokOptions options() {
+        return new TicktokOptions();
     }
 
-    public Ticktok on(String schedule){
-        this.schedule = schedule;
-        return this;
+    public void schedule(String name, String schedule, TickConsumer consumer) {
+        Clock clock = new RestClockCreator(this.options).create(new ClockRequest(name, schedule));
+        tickListener.listen(clock.getChannel(), consumer);
     }
 
-    public void invoke(Runnable runnable){
-        Clock clock = new RestTicktokClient(this.options).register(ClockRequest.create(this.name, this.schedule));
-        TickListener.listen(clock.getChannel(), runnable);
+    public void disconnect() {
+       tickListener.disconnect();
     }
-
 }
