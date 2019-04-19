@@ -6,7 +6,9 @@
 This is the official Java sdk for *[Ticktok.io](https://ticktok.io/)* service.
 
 
-## Import sdk
+## Quick Start
+
+### Import sdk
 artifacts available @ [*bintray repositories*](https://bintray.com/ticktok-io/maven/ticktok-java-client)
 
 ### Gradle
@@ -46,17 +48,13 @@ dependencies {
 
 ```
 
-## Example
+### Example
 ```java
-new Ticktok(new TicktokOptions("<Ticktok-Domain>", "<Ticktok token>")).
-        newClock("my_clock_name").
-        on("every.5.seconds").
-        invoke(() -> {
-            System.out.print("tick message by defined schedule");
-        });
-}
+new Ticktok(options().domain("<ticktok-domain>").token("<ticktok-token>")).
+    schedule("my first clock", "every.5.seconds", () -> {
+        System.out.print("tick me baby one more time");
+    });
 ```
 
 ##Community
-
 Come & chat with us on [Slack](https://ticktokio.slack.com/messages/CF0DYKN0Y/details/)
