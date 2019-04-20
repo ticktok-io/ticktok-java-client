@@ -2,11 +2,8 @@ version: 2
 
 defaults: &defaults
   working_directory: ~/repo
-  environment:
-    JVM_OPTS: -Xmx3200m
-    TERM: dumb
   docker:
-    - image: circleci/openjdk:8-jdk
+    - image: circleci/openjdk:8u181-jdk
     - image: rabbitmq:3
 
 jobs:
@@ -18,15 +15,27 @@ jobs:
       - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
           key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
-      - run: mvn -s settings.xml dependency:go-offline # gets the project dependencies
+      - run: mvn dependency:go-offline # gets the project dependencies
 
       - save_cache: # saves the project dependencies
           paths:
             - ~/.m2
           key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
+      - run: mvn test
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
       - store_test_results:
-          path: build/test-results
+          path: ~/test-results
+
+      - store_artifacts:
+          path: ~/test-results/junit
 
       - persist_to_workspace:
           root: ~/repo

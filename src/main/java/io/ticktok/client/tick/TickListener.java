@@ -2,7 +2,6 @@ package io.ticktok.client.tick;
 
 import com.rabbitmq.client.*;
 import io.ticktok.client.server.Clock;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URI;
