@@ -27,8 +27,18 @@ jobs:
 
       - run: mvn test
 
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
       - store_test_results:
-          path: build/test-results
+          path: ~/test-results
+
+      - store_artifacts:
+          path: ~/test-results/junit
 
       - persist_to_workspace:
           root: ~/repo
