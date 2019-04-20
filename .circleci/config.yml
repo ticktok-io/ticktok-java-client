@@ -25,6 +25,13 @@ jobs:
             - ~/.m2
           key: circleci-ticktok-java-client-{{ checksum "pom.xml" }}
 
+      - store_test_results:
+          path: build/test-results
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
   publish:
     <<: *defaults
     steps:

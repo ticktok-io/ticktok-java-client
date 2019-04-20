@@ -10,33 +10,4 @@
         </server>
     </servers>
 
-<!--    <profiles>
-        <profile>
-            <repositories>
-                <repository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-rockem-maven</id>
-                    <name>bintray</name>
-                    <url>https://dl.bintray.com/rockem/maven</url>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>bintray-rockem-maven</id>
-                    <name>bintray-plugins</name>
-                    <url>https://dl.bintray.com/rockem/maven</url>
-                </pluginRepository>
-            </pluginRepositories>
-            <id>bintray</id>
-        </profile>
-    </profiles>
-    <activeProfiles>
-        <activeProfile>bintray</activeProfile>
-    </activeProfiles>-->
-
 </settings>
