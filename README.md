@@ -56,5 +56,5 @@ new Ticktok(options().domain("<ticktok-domain>").token("<ticktok-token>")).
     });
 ```
 
-##Community
+## Community
 Come & chat with us on [Slack](https://ticktokio.slack.com/messages/CF0DYKN0Y/details/)
