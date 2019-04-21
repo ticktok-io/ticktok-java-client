@@ -3,8 +3,8 @@ package test.io.ticktok.client.tick;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import io.ticktok.client.server.Clock;
 import io.ticktok.client.tick.ChannelException;
+import io.ticktok.client.tick.TickChannel;
 import io.ticktok.client.tick.TickListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TickListenerTest {
+class TickListenerTest_Rabbit {
 
     private final TickListener tickListener = new TickListener();
 
@@ -30,7 +30,7 @@ class TickListenerTest {
     }
 
     private void listenOn(String uri) {
-        tickListener.listen(Clock.TickChannel.builder().uri(uri).build(), () -> {
+        tickListener.forChannel(TickChannel.builder().uri(uri).build()).register(() -> {
         });
     }
 
@@ -51,7 +51,7 @@ class TickListenerTest {
         withQueues((channel, queueNames) -> {
         AtomicInteger tickCount = new AtomicInteger();
             queueNames.forEach(qn -> {
-                tickListener.listen(Clock.TickChannel.builder().uri("amqp://localhost").queue(qn).build(), tickCount::incrementAndGet);
+                tickListener.forChannel(TickChannel.builder().uri("amqp://localhost").queue(qn).build()).register(tickCount::incrementAndGet);
             });
 
             tickListener.disconnect();
@@ -64,7 +64,7 @@ class TickListenerTest {
         }, "q1", "q2");
     }
 
-    private void withQueues(QithQueuesCallable callable, String... queueNames) throws Exception {
+    private void withQueues(WithQueuesCallable callable, String... queueNames) throws Exception {
         Connection connection = new ConnectionFactory().newConnection();
         Channel channel = connection.createChannel();
         for (String qn : queueNames) {
@@ -81,7 +81,7 @@ class TickListenerTest {
         tickListener.disconnect();
     }
 
-    interface QithQueuesCallable {
+    interface WithQueuesCallable {
         void call(Channel channel, List<String> queueNames) throws Exception;
     }
 }

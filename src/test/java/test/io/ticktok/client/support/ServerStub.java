@@ -6,6 +6,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.ticktok.client.server.Clock;
 import io.ticktok.client.server.ClockRequest;
+import io.ticktok.client.tick.TickChannel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.rockm.blink.BlinkServer;
@@ -49,7 +50,7 @@ public class ServerStub {
     private void createQueue() throws TimeoutException, IOException {
         connection = new ConnectionFactory().newConnection();
         channel = connection.createChannel();
-        channel.queueDeclare(QUEUE, false, false, false, null);
+        channel.queueDeclare(QUEUE, false, false, true, null);
     }
 
     private void validateToken(String token) {
@@ -66,7 +67,7 @@ public class ServerStub {
                 name(request.getName()).
                 schedule(request.getSchedule()).
                 url(DOMAIN + "/api/v1/clocks/" + CLOCK_ID).
-                channel(Clock.TickChannel.builder().queue(QUEUE).uri("amqp://localhost:5672").build()).
+                channel(TickChannel.builder().queue(QUEUE).uri("amqp://localhost:5672").build()).
                 build());
     }
 

@@ -21,7 +21,7 @@ public class Ticktok {
 
     public void schedule(String name, String schedule, TickConsumer consumer) {
         Clock clock = new RestClockCreator(this.options).create(new ClockRequest(name, schedule));
-        tickListener.listen(clock.getChannel(), consumer);
+        new TickListener().forChannel(clock.getChannel()).register(consumer);
     }
 
     public void disconnect() {

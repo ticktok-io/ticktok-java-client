@@ -10,8 +10,9 @@ import org.junit.jupiter.api.function.Executable;
 import test.io.ticktok.client.support.ServerStub;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.Thread.sleep;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -63,12 +64,13 @@ class TicktokTest {
 
     @Test
     void disconnectClocks() throws Exception {
-        CountDownLatch waitForTickLatch = new CountDownLatch(1);
-        ticktok.schedule(NAME, SCHEDULE, waitForTickLatch::countDown);
+        AtomicInteger tickCount = new AtomicInteger();
+        ticktok.schedule(NAME, SCHEDULE, tickCount::incrementAndGet);
         ticktok.disconnect();
+        int currentCount = tickCount.get();
         server.tick();
-        waitForTickLatch.await(3, TimeUnit.SECONDS);
-        assertThat("Disconnected clock got ticked", waitForTickLatch.getCount(), is(1L));
+        sleep(3000);
+        assertThat("Disconnected clock got ticked", tickCount.get(), is(currentCount));
     }
 
     @AfterEach
