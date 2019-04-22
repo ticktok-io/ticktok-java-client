@@ -33,7 +33,7 @@ class TicktokTest {
 
     @BeforeEach
     void init() throws Exception {
-        server = new ServerStub(9999, true);
+        server = new ServerStub(9999);
     }
 
     @Test
@@ -53,7 +53,7 @@ class TicktokTest {
         CountDownLatch waitForTickLatch = new CountDownLatch(1);
         ticktok.schedule(NAME, SCHEDULE, waitForTickLatch::countDown);
         verifyCallbackWasntDoneSynchronicity(waitForTickLatch);
-        server.tick();
+        server.tick(NAME);
         assertTimeoutPreemptively(ofSeconds(3), (Executable) waitForTickLatch::await);
         // pass
     }
@@ -65,12 +65,11 @@ class TicktokTest {
     @Test
     void disconnectClocks() throws Exception {
         AtomicInteger tickCount = new AtomicInteger();
-        ticktok.schedule(NAME, SCHEDULE, tickCount::incrementAndGet);
+        ticktok.schedule("ct-disconnect", "every.1.seconds", tickCount::incrementAndGet);
         ticktok.disconnect();
-        int currentCount = tickCount.get();
-        server.tick();
+        server.tick("ct-disconnect");
         sleep(3000);
-        assertThat("Disconnected clock got ticked", tickCount.get(), is(currentCount));
+        assertThat("Disconnected clock got ticked", tickCount.get(), is(0));
     }
 
     @AfterEach

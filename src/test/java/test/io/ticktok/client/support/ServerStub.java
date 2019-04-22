@@ -29,28 +29,34 @@ public class ServerStub {
     private Channel channel;
 
 
-    public ServerStub(int port, boolean validResponse) throws Exception {
-        createQueue();
+    public ServerStub(int port) throws Exception {
+        createConnection();
         app = new BlinkServer(port) {{
             post("/api/v1/clocks", (req, res) -> {
-                lastClockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
+                ClockRequest clockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
                 try {
                     validateToken(req.param("access_token"));
-                    validateSchedule(lastClockRequest.getSchedule());
+                    validateSchedule(clockRequest.getSchedule());
                 } catch(StatusCodeException e) {
                     res.status(e.getStatus());
                     return "";
                 }
+                final Clock clock = clockFrom(clockRequest);
+                try {
+                    channel.queueDeclare(clock.getChannel().getQueue(), false, false, true, null);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to create queue", e);
+                }
+                lastClockRequest = clockRequest;
                 res.status(201);
-                return createClockFrom(clockRequestFrom(req.body()));
+                return new Gson().toJson(clock);
             });
         }};
     }
 
-    private void createQueue() throws TimeoutException, IOException {
+    private void createConnection() throws TimeoutException, IOException {
         connection = new ConnectionFactory().newConnection();
         channel = connection.createChannel();
-        channel.queueDeclare(QUEUE, false, false, true, null);
     }
 
     private void validateToken(String token) {
@@ -61,22 +67,18 @@ public class ServerStub {
         if(INVALID_SCHEDULE.equals(schedule)) throw new StatusCodeException(400);
     }
 
-    private String createClockFrom(ClockRequest request) {
-        return new Gson().toJson(Clock.builder().
+    private Clock clockFrom(ClockRequest request) {
+        return Clock.builder().
                 id(CLOCK_ID).
                 name(request.getName()).
                 schedule(request.getSchedule()).
                 url(DOMAIN + "/api/v1/clocks/" + CLOCK_ID).
-                channel(TickChannel.builder().queue(QUEUE).uri("amqp://localhost:5672").build()).
-                build());
+                channel(TickChannel.builder().queue(request.getName()).uri("amqp://localhost:5672").build()).
+                build();
     }
 
-    private ClockRequest clockRequestFrom(String body) {
-        return new Gson().fromJson(body, ClockRequest.class);
-    }
-
-    public void tick() throws IOException {
-        channel.basicPublish("", QUEUE, null, "tick".getBytes());
+    public void tick(String name) throws IOException {
+        channel.basicPublish("", name, null, "tick".getBytes());
     }
 
     public void stop() throws IOException, TimeoutException {

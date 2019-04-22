@@ -8,15 +8,20 @@ import io.ticktok.client.tick.TickChannel;
 import io.ticktok.client.tick.TickListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
+import static java.time.Duration.ofSeconds;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 class TickListenerTest_Rabbit {
 
@@ -51,7 +56,7 @@ class TickListenerTest_Rabbit {
         withQueues((channel, queueNames) -> {
         AtomicInteger tickCount = new AtomicInteger();
             queueNames.forEach(qn -> {
-                tickListener.forChannel(TickChannel.builder().uri("amqp://localhost").queue(qn).build()).register(tickCount::incrementAndGet);
+                tickListener.forChannel(tickChannelFor(qn)).register(tickCount::incrementAndGet);
             });
 
             tickListener.disconnect();
@@ -64,6 +69,10 @@ class TickListenerTest_Rabbit {
         }, "q1", "q2");
     }
 
+    private TickChannel tickChannelFor(String qn) {
+        return TickChannel.builder().uri("amqp://localhost").queue(qn).build();
+    }
+
     private void withQueues(WithQueuesCallable callable, String... queueNames) throws Exception {
         Connection connection = new ConnectionFactory().newConnection();
         Channel channel = connection.createChannel();
@@ -74,6 +83,20 @@ class TickListenerTest_Rabbit {
         callable.call(channel, Arrays.asList(queueNames));
         channel.close();
         connection.close();
+    }
+
+    @Test
+    void replaceCallbackForAGivenChannel() throws Exception {
+       withQueues((channel, queues) -> {
+           CountDownLatch tickCountOld = new CountDownLatch(1);
+           CountDownLatch tickCountNew = new CountDownLatch(1);
+           tickListener.forChannel(tickChannelFor("q1")).register(tickCountOld::countDown);
+           tickListener.forChannel(tickChannelFor("q1")).register(tickCountNew::countDown);
+
+           channel.basicPublish("", "q1", null, "".getBytes());
+
+           assertTimeoutPreemptively(ofSeconds(1), (Executable) tickCountNew::await);
+       }, "q1");
     }
 
     @AfterEach
