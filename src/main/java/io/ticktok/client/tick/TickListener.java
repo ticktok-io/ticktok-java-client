@@ -5,11 +5,14 @@ import java.util.Map;
 
 public class TickListener {
 
+    public static final String RABBIT = "rabbit";
+    public static final String HTTP = "http";
+
     private final Map<String, Ticker> tickers = new HashMap<>();
 
     public TickListener() {
-        tickers.put("rabbit", new RabbitTicker());
-        tickers.put("http", new HttpTicker());
+        tickers.put(RABBIT, new RabbitTicker());
+        tickers.put(HTTP, new HttpTicker());
     }
 
     public TickRegistrator forChannel(TickChannel channel) {

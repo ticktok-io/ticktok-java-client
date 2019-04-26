@@ -24,18 +24,23 @@ public class RabbitTicker implements Ticker {
     @Override
     public void register(TickChannel tickChannel, TickConsumer consumer) {
         try {
-            createChannelFor(tickChannel.getUri());
-            channel.basicConsume(
-                    tickChannel.getQueue(),
-                    true,
-                    consumerFor(channel, tickChannel.getQueue(), consumer));
+            createChannelIfNeededOn(tickChannel.getUri());
+            if (!consumers.containsKey(tickChannel.getQueue())) {
+                final TickConsumerWrapper tickConsumerWrapper = new TickConsumerWrapper(channel);
+                consumers.put(tickChannel.getQueue(), tickConsumerWrapper);
+                channel.basicConsume(
+                        tickChannel.getQueue(),
+                        true,
+                        tickConsumerWrapper);
+            }
+            consumers.get(tickChannel.getQueue()).setTickConsumer(consumer);
         } catch (Exception e) {
             throw new ChannelException(format("Failed to connect to queue: {0}, with uri: {1}",
                     tickChannel.getQueue(), tickChannel.getUri()), e);
         }
     }
 
-    private void createChannelFor(String uri) throws Exception {
+    private void createChannelIfNeededOn(String uri) throws Exception {
         synchronized (lock) {
             if (connection == null) {
                 connection = createConnectionFactoryFor(uri).newConnection();
@@ -60,6 +65,7 @@ public class RabbitTicker implements Ticker {
     public void disconnect() {
         closeChannel();
         closeConnection();
+        consumers.clear();
     }
 
     private void closeChannel() {

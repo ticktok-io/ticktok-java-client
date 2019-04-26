@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.ticktok.client.tick.TickListener.RABBIT;
 import static java.lang.Thread.sleep;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.core.Is.is;
@@ -34,7 +35,7 @@ class RabbitTickerTest {
     }
 
     private void listenOn(String uri) {
-        tickListener.forChannel(TickChannel.builder().uri(uri).build()).register(() -> {
+        tickListener.forChannel(TickChannel.builder().type(RABBIT).uri(uri).build()).register(() -> {
         });
     }
 
@@ -69,7 +70,7 @@ class RabbitTickerTest {
     }
 
     private TickChannel tickChannelFor(String qn) {
-        return TickChannel.builder().type("rabbit").uri("amqp://localhost").queue(qn).build();
+        return TickChannel.builder().type(RABBIT).uri("amqp://localhost").queue(qn).build();
     }
 
     private void withQueues(WithQueuesCallable callable, String... queueNames) throws Exception {
@@ -95,7 +96,7 @@ class RabbitTickerTest {
            channel.basicPublish("", "q1", null, "".getBytes());
 
            assertTimeoutPreemptively(ofSeconds(1), (Executable) tickCountNew::await);
-           assertThat(tickCountOld.getCount(), is(0));
+           assertThat(tickCountOld.getCount(), is(1L));
        }, "q1");
     }
 

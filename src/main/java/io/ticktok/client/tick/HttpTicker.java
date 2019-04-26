@@ -27,10 +27,20 @@ public class HttpTicker implements Ticker {
     @Override
     public void register(TickChannel channel, TickConsumer consumer) {
         final String url = channel.getDetails().get("url");
-        consumers.putIfAbsent(url, new TickConsumerWrapper(url, consumer));
+        if (!consumers.containsKey(url)) {
+            scheduleNewConsumer(consumer, url);
+        }
+        updateConsumer(consumer, url);
+    }
+
+    private void updateConsumer(TickConsumer consumer, String url) {
         final TickConsumerWrapper tickConsumerWrapper = consumers.get(url);
         tickConsumerWrapper.setTickConsumer(consumer);
+    }
 
+    private void scheduleNewConsumer(TickConsumer consumer, String url) {
+        final TickConsumerWrapper tickConsumerWrapper = new TickConsumerWrapper(url, consumer);
+        consumers.put(url, tickConsumerWrapper);
         timer.scheduleAtFixedRate(tickConsumerWrapper, 0L, 1000L);
     }
 
@@ -53,7 +63,7 @@ public class HttpTicker implements Ticker {
 
         @Override
         public void run() {
-            if(ticksAvailableOn(url)) {
+            if (ticksAvailableOn(url)) {
                 tickConsumer.consume();
             }
         }

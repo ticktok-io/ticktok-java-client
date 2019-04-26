@@ -14,6 +14,8 @@ import org.rockm.blink.BlinkServer;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import static io.ticktok.client.tick.TickListener.RABBIT;
+
 public class ServerStub {
 
     public static final String DOMAIN = "http://localhost:9999";
@@ -73,7 +75,7 @@ public class ServerStub {
                 name(request.getName()).
                 schedule(request.getSchedule()).
                 url(DOMAIN + "/api/v1/clocks/" + CLOCK_ID).
-                channel(TickChannel.builder().queue(request.getName()).uri("amqp://localhost:5672").build()).
+                channel(TickChannel.builder().type(RABBIT).queue(request.getName()).uri("amqp://localhost:5672").build()).
                 build();
     }
 
