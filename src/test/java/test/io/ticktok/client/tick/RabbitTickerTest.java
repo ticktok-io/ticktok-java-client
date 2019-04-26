@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
-class TickListenerTest_Rabbit {
+class RabbitTickerTest {
 
     private final TickListener tickListener = new TickListener();
 
@@ -64,13 +63,13 @@ class TickListenerTest_Rabbit {
                 channel.basicPublish("", qn, null, "".getBytes());
             }
 
-            sleep(2000);
+            sleep(1000);
             assertThat(tickCount.get(), is(0));
         }, "q1", "q2");
     }
 
     private TickChannel tickChannelFor(String qn) {
-        return TickChannel.builder().uri("amqp://localhost").queue(qn).build();
+        return TickChannel.builder().type("rabbit").uri("amqp://localhost").queue(qn).build();
     }
 
     private void withQueues(WithQueuesCallable callable, String... queueNames) throws Exception {
@@ -96,6 +95,7 @@ class TickListenerTest_Rabbit {
            channel.basicPublish("", "q1", null, "".getBytes());
 
            assertTimeoutPreemptively(ofSeconds(1), (Executable) tickCountNew::await);
+           assertThat(tickCountOld.getCount(), is(0));
        }, "q1");
     }
 

@@ -68,7 +68,7 @@ class TicktokTest {
         ticktok.schedule("ct-disconnect", "every.1.seconds", tickCount::incrementAndGet);
         ticktok.disconnect();
         server.tick("ct-disconnect");
-        sleep(3000);
+        sleep(1000);
         assertThat("Disconnected clock got ticked", tickCount.get(), is(0));
     }
 

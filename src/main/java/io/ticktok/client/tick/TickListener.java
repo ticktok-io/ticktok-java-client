@@ -9,14 +9,15 @@ public class TickListener {
 
     public TickListener() {
         tickers.put("rabbit", new RabbitTicker());
+        tickers.put("http", new HttpTicker());
     }
 
     public TickRegistrator forChannel(TickChannel channel) {
-        return new TickRegistrator(tickers.get("rabbit"), channel);
+        return new TickRegistrator(tickers.get(channel.getType()), channel);
     }
 
     public void disconnect() {
-        tickers.get("rabbit").disconnect();
+        tickers.values().forEach(Ticker::disconnect);
     }
 
     public static class TickRegistrator {
