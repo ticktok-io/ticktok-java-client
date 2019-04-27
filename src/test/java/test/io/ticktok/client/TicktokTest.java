@@ -25,10 +25,8 @@ import static test.io.ticktok.client.support.ServerStub.TOKEN;
 @TestInstance(PER_CLASS)
 class TicktokTest {
 
-    private static final String SCHEDULE = "every.1.seconds";
-    public static final String NAME = "my_clock";
-
     private final Ticktok ticktok = new Ticktok(Ticktok.options().domain(DOMAIN).token(TOKEN));
+    
     private ServerStub server;
 
     @BeforeEach
