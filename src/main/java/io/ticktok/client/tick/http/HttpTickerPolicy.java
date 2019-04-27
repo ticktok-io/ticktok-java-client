@@ -1,7 +1,11 @@
-package io.ticktok.client.tick;
+package io.ticktok.client.tick.http;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import io.ticktok.client.tick.TickChannel;
+import io.ticktok.client.tick.TickConsumer;
+import io.ticktok.client.tick.TickConsumerInvoker;
+import io.ticktok.client.tick.TickerPolicy;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
@@ -12,51 +16,53 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Slf4j
-public class HttpTicker implements Ticker {
+public class HttpTickerPolicy implements TickerPolicy {
 
+    public static final String URL_PARAM = "url";
     private final HttpClient httpClient = HttpClients.custom()
             .setRetryHandler(new DefaultHttpRequestRetryHandler(0, false))
             .build();
-    private final Timer timer = new Timer();
-    private Map<String, TickConsumerWrapper> consumers = new ConcurrentHashMap<>();
+    private Timer timer;
 
     @Override
-    public void register(TickChannel channel, TickConsumer consumer) {
-        final String url = channel.getDetails().get("url");
-        if (!consumers.containsKey(url)) {
-            scheduleNewConsumer(consumer, url);
+    public TickConsumerInvoker createConsumer(TickChannel channel, TickConsumer consumer) {
+        createTimerIfNeeded();
+        String url = channel.getDetails().get(URL_PARAM);
+        final HttpTickConsumerInvoker tickConsumerInvoker = new HttpTickConsumerInvoker(url, consumer);
+        timer.scheduleAtFixedRate(tickConsumerInvoker, 0L, 1000L);
+        return tickConsumerInvoker;
+    }
+
+    private void createTimerIfNeeded() {
+        if(timer == null) {
+           timer = new Timer();
         }
-        updateConsumer(consumer, url);
     }
 
-    private void updateConsumer(TickConsumer consumer, String url) {
-        final TickConsumerWrapper tickConsumerWrapper = consumers.get(url);
-        tickConsumerWrapper.setTickConsumer(consumer);
-    }
-
-    private void scheduleNewConsumer(TickConsumer consumer, String url) {
-        final TickConsumerWrapper tickConsumerWrapper = new TickConsumerWrapper(url, consumer);
-        consumers.put(url, tickConsumerWrapper);
-        timer.scheduleAtFixedRate(tickConsumerWrapper, 0L, 1000L);
+    @Override
+    public String idKey() {
+        return URL_PARAM;
     }
 
     @Override
     public void disconnect() {
-        consumers.values().forEach(TimerTask::cancel);
-        timer.purge();
+        if(timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 
     @Setter
-    private class TickConsumerWrapper extends TimerTask {
+    private class HttpTickConsumerInvoker extends TimerTask implements TickConsumerInvoker {
 
         private TickConsumer tickConsumer;
         private final String url;
 
-        public TickConsumerWrapper(String url, TickConsumer tickConsumer) {
+        public HttpTickConsumerInvoker(String url, TickConsumer tickConsumer) {
             this.tickConsumer = tickConsumer;
             this.url = url;
         }

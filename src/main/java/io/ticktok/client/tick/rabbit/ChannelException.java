@@ -1,4 +1,4 @@
-package io.ticktok.client.tick;
+package io.ticktok.client.tick.rabbit;
 
 import io.ticktok.client.TicktokException;
 

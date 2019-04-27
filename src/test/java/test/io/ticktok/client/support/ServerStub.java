@@ -1,5 +1,6 @@
 package test.io.ticktok.client.support;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -14,6 +15,8 @@ import org.rockm.blink.BlinkServer;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import static io.ticktok.client.tick.rabbit.RabbitTickerPolicy.QUEUE_PARAM;
+import static io.ticktok.client.tick.rabbit.RabbitTickerPolicy.URI_PARAM;
 import static io.ticktok.client.tick.TickListener.RABBIT;
 
 public class ServerStub {
@@ -22,7 +25,6 @@ public class ServerStub {
     public static final String TOKEN = "my_access_token";
     public static final String CLOCK_ID = "123";
     private static final String INVALID_SCHEDULE = "invalid";
-    private static final String QUEUE = "java-client-queue-test";
 
     public ClockRequest lastClockRequest;
     private final BlinkServer app;
@@ -45,7 +47,7 @@ public class ServerStub {
                 }
                 final Clock clock = clockFrom(clockRequest);
                 try {
-                    channel.queueDeclare(clock.getChannel().getQueue(), false, false, true, null);
+                    channel.queueDeclare(clock.getChannel().getDetails().get(QUEUE_PARAM), false, false, true, null);
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to create queue", e);
                 }
@@ -75,7 +77,10 @@ public class ServerStub {
                 name(request.getName()).
                 schedule(request.getSchedule()).
                 url(DOMAIN + "/api/v1/clocks/" + CLOCK_ID).
-                channel(TickChannel.builder().type(RABBIT).queue(request.getName()).uri("amqp://localhost:5672").build()).
+                channel(TickChannel.builder()
+                        .type(RABBIT)
+                        .details(ImmutableMap.of(URI_PARAM, "amqp://localhost:5672", QUEUE_PARAM, request.getName()))
+                        .build()).
                 build();
     }
 

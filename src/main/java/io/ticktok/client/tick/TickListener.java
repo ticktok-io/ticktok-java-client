@@ -1,7 +1,12 @@
 package io.ticktok.client.tick;
 
+import io.ticktok.client.tick.http.HttpTickerPolicy;
+import io.ticktok.client.tick.rabbit.RabbitTickerPolicy;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.String.format;
 
 public class TickListener {
 
@@ -11,24 +16,32 @@ public class TickListener {
     private final Map<String, Ticker> tickers = new HashMap<>();
 
     public TickListener() {
-        tickers.put(RABBIT, new RabbitTicker());
-        tickers.put(HTTP, new HttpTicker());
+        tickers.put(RABBIT, new Ticker(new RabbitTickerPolicy()));
+        tickers.put(HTTP, new Ticker(new HttpTickerPolicy()));
     }
 
-    public TickRegistrator forChannel(TickChannel channel) {
-        return new TickRegistrator(tickers.get(channel.getType()), channel);
+    public TickRegistrar forChannel(TickChannel channel) {
+        validateChannelType(channel);
+        return new TickRegistrar(tickers.get(channel.getType()), channel);
+    }
+
+    private void validateChannelType(TickChannel channel) {
+        if(!tickers.containsKey(channel.getType())) {
+            throw new ChannelTypeUnsupportedException(
+                    format("Channel type: %s is unsupported", channel.getType()));
+        }
     }
 
     public void disconnect() {
         tickers.values().forEach(Ticker::disconnect);
     }
 
-    public static class TickRegistrator {
+    public static class TickRegistrar {
 
         private final Ticker ticker;
         private final TickChannel channel;
 
-        public TickRegistrator(Ticker ticker, TickChannel channel) {
+        public TickRegistrar(Ticker ticker, TickChannel channel) {
             this.ticker = ticker;
             this.channel = channel;
         }
@@ -37,4 +50,5 @@ public class TickListener {
             ticker.register(channel, consumer);
         }
     }
+
 }

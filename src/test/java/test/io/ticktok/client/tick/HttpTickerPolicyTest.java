@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.rockm.blink.BlinkServer;
 
-import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -24,9 +23,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
-import static test.io.ticktok.client.tick.HttpTickerTest.TicktokServer.PORT;
+import static test.io.ticktok.client.tick.HttpTickerPolicyTest.TicktokServer.PORT;
 
-public class HttpTickerTest {
+public class HttpTickerPolicyTest {
 
     public static final int SECOND = 1000;
 

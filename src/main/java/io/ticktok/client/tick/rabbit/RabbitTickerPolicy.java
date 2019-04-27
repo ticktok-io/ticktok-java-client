@@ -1,6 +1,7 @@
-package io.ticktok.client.tick;
+package io.ticktok.client.tick.rabbit;
 
 import com.rabbitmq.client.*;
+import io.ticktok.client.tick.*;
 import lombok.Setter;
 
 import java.io.IOException;
@@ -8,35 +9,32 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.text.MessageFormat.format;
 
 
-public class RabbitTicker implements Ticker {
+public class RabbitTickerPolicy implements TickerPolicy {
 
+    public static final String URI_PARAM = "uri";
+    public static final String QUEUE_PARAM = "queue";
+
+    private final Object lock = new Object();
     private Connection connection;
     private Channel channel;
-    private final Object lock = new Object();
-    private Map<String, TickConsumerWrapper> consumers = new ConcurrentHashMap<>();
 
     @Override
-    public void register(TickChannel tickChannel, TickConsumer consumer) {
+    public TickConsumerInvoker createConsumer(TickChannel tickChannel, TickConsumer consumer) {
         try {
-            createChannelIfNeededOn(tickChannel.getUri());
-            if (!consumers.containsKey(tickChannel.getQueue())) {
-                final TickConsumerWrapper tickConsumerWrapper = new TickConsumerWrapper(channel);
-                consumers.put(tickChannel.getQueue(), tickConsumerWrapper);
-                channel.basicConsume(
-                        tickChannel.getQueue(),
-                        true,
-                        tickConsumerWrapper);
-            }
-            consumers.get(tickChannel.getQueue()).setTickConsumer(consumer);
+            createChannelIfNeededOn(tickChannel.getDetails().get(URI_PARAM));
+            final RabbitTickConsumerInvoker rabbitTickConsumerInvoker = new RabbitTickConsumerInvoker(channel);
+            channel.basicConsume(
+                    tickChannel.getDetails().get(QUEUE_PARAM),
+                    true,
+                    rabbitTickConsumerInvoker);
+            return rabbitTickConsumerInvoker;
         } catch (Exception e) {
             throw new ChannelException(format("Failed to connect to queue: {0}, with uri: {1}",
-                    tickChannel.getQueue(), tickChannel.getUri()), e);
+                    tickChannel.getDetails().get(QUEUE_PARAM), tickChannel.getDetails().get(URI_PARAM)), e);
         }
     }
 
@@ -55,17 +53,15 @@ public class RabbitTicker implements Ticker {
         return factory;
     }
 
-    private Consumer consumerFor(Channel channel, String queue, final TickConsumer consumer) {
-        consumers.putIfAbsent(queue, new TickConsumerWrapper(channel));
-        final TickConsumerWrapper consumerWrapper = consumers.get(queue);
-        consumerWrapper.setTickConsumer(consumer);
-        return consumerWrapper;
+    @Override
+    public String idKey() {
+        return "queue";
     }
 
+    @Override
     public void disconnect() {
         closeChannel();
         closeConnection();
-        consumers.clear();
     }
 
     private void closeChannel() {
@@ -93,11 +89,11 @@ public class RabbitTicker implements Ticker {
     }
 
     @Setter
-    private class TickConsumerWrapper extends DefaultConsumer {
+    private class RabbitTickConsumerInvoker extends DefaultConsumer implements TickConsumerInvoker {
 
         private TickConsumer tickConsumer;
 
-        public TickConsumerWrapper(Channel channel) {
+        public RabbitTickConsumerInvoker(Channel channel) {
             super(channel);
         }
 

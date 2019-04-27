@@ -1,9 +1,10 @@
 package test.io.ticktok.client.tick;
 
+import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import io.ticktok.client.tick.ChannelException;
+import io.ticktok.client.tick.rabbit.ChannelException;
 import io.ticktok.client.tick.TickChannel;
 import io.ticktok.client.tick.TickListener;
 import org.junit.jupiter.api.AfterEach;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.ticktok.client.tick.rabbit.RabbitTickerPolicy.QUEUE_PARAM;
+import static io.ticktok.client.tick.rabbit.RabbitTickerPolicy.URI_PARAM;
 import static io.ticktok.client.tick.TickListener.RABBIT;
 import static java.lang.Thread.sleep;
 import static java.time.Duration.ofSeconds;
@@ -23,7 +26,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
-class RabbitTickerTest {
+class RabbitTickerPolicyTest {
 
     private final TickListener tickListener = new TickListener();
 
@@ -35,7 +38,11 @@ class RabbitTickerTest {
     }
 
     private void listenOn(String uri) {
-        tickListener.forChannel(TickChannel.builder().type(RABBIT).uri(uri).build()).register(() -> {
+        tickListener.forChannel(
+                TickChannel.builder()
+                        .type(RABBIT)
+                        .details(ImmutableMap.of(URI_PARAM, uri, QUEUE_PARAM, "kuku"))
+                        .build()).register(() -> {
         });
     }
 
@@ -70,7 +77,10 @@ class RabbitTickerTest {
     }
 
     private TickChannel tickChannelFor(String qn) {
-        return TickChannel.builder().type(RABBIT).uri("amqp://localhost").queue(qn).build();
+        return TickChannel.builder()
+                .type(RABBIT)
+                .details(ImmutableMap.of(URI_PARAM, "amqp://localhost", QUEUE_PARAM, qn))
+                .build();
     }
 
     private void withQueues(WithQueuesCallable callable, String... queueNames) throws Exception {
