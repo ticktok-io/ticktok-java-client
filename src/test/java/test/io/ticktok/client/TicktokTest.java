@@ -50,16 +50,18 @@ class TicktokTest {
 
     @Test
     void invokeOnTick() throws Exception {
-        CountDownLatch waitForTickLatch = new CountDownLatch(1);
-        ticktok.schedule(NAME, SCHEDULE, waitForTickLatch::countDown);
+        CountDownLatch waitForTickLatch = new CountDownLatch(2);
+        ticktok.schedule("kuku", "every.2.seconds", waitForTickLatch::countDown);
+        ticktok.schedule("popo", "every.1.minute", waitForTickLatch::countDown);
         verifyCallbackWasntDoneSynchronicity(waitForTickLatch);
-        server.tick(NAME);
+        server.tick("kuku");
+        server.tick("popo");
         assertTimeoutPreemptively(ofSeconds(3), (Executable) waitForTickLatch::await);
         // pass
     }
 
     private void verifyCallbackWasntDoneSynchronicity(CountDownLatch countDownLatch) {
-        assert countDownLatch.getCount() == 1;
+        assert countDownLatch.getCount() == 2;
     }
 
     @Test
