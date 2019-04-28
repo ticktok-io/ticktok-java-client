@@ -2,7 +2,7 @@ package io.ticktok.client;
 
 import io.ticktok.client.server.Clock;
 import io.ticktok.client.server.ClockRequest;
-import io.ticktok.client.server.RestClockCreator;
+import io.ticktok.client.server.rest.RestClockCreator;
 import io.ticktok.client.tick.TickConsumer;
 import io.ticktok.client.tick.TickListener;
 

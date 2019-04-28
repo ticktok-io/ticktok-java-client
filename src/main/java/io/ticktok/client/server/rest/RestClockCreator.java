@@ -1,7 +1,11 @@
-package io.ticktok.client.server;
+package io.ticktok.client.server.rest;
 
 import com.google.gson.Gson;
 import io.ticktok.client.TicktokOptions;
+import io.ticktok.client.server.Clock;
+import io.ticktok.client.server.ClockRequest;
+import io.ticktok.client.server.ConnectionException;
+import io.ticktok.client.server.FailToCreateClockException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

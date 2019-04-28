@@ -23,15 +23,10 @@ public class RabbitTickerPolicy implements TickerPolicy {
     private Channel channel;
 
     @Override
-    public TickConsumerInvoker createConsumer(TickChannel tickChannel, TickConsumer consumer) {
+    public TickConsumerInvoker createConsumer(TickChannel tickChannel) {
         try {
             createChannelIfNeededOn(tickChannel.getDetails().get(URI_PARAM));
-            final RabbitTickConsumerInvoker rabbitTickConsumerInvoker = new RabbitTickConsumerInvoker(channel);
-            channel.basicConsume(
-                    tickChannel.getDetails().get(QUEUE_PARAM),
-                    true,
-                    rabbitTickConsumerInvoker);
-            return rabbitTickConsumerInvoker;
+            return createScheduledInvokerFor(tickChannel);
         } catch (Exception e) {
             throw new ChannelException(format("Failed to connect to queue: {0}, with uri: {1}",
                     tickChannel.getDetails().get(QUEUE_PARAM), tickChannel.getDetails().get(URI_PARAM)), e);
@@ -51,6 +46,15 @@ public class RabbitTickerPolicy implements TickerPolicy {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(URI.create(uri));
         return factory;
+    }
+
+    private RabbitTickConsumerInvoker createScheduledInvokerFor(TickChannel tickChannel) throws IOException {
+        final RabbitTickConsumerInvoker rabbitTickConsumerInvoker = new RabbitTickConsumerInvoker(channel);
+        channel.basicConsume(
+                tickChannel.getDetails().get(QUEUE_PARAM),
+                true,
+                rabbitTickConsumerInvoker);
+        return rabbitTickConsumerInvoker;
     }
 
     @Override

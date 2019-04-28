@@ -15,7 +15,7 @@ public class Ticker {
     public synchronized void register(TickChannel channel, TickConsumer consumer) {
         final String key = channel.getDetails().get(policy.idKey());
         if (!consumers.containsKey(key)) {
-            TickConsumerInvoker invoker = policy.createConsumer(channel, consumer);
+            TickConsumerInvoker invoker = policy.createConsumer(channel);
             consumers.put(key, invoker);
         }
         consumers.get(key).setTickConsumer(consumer);

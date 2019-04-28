@@ -12,6 +12,7 @@ import test.io.ticktok.client.support.ServerStub;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.ticktok.client.Ticktok.options;
 import static java.lang.Thread.sleep;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.core.Is.is;
@@ -25,8 +26,8 @@ import static test.io.ticktok.client.support.ServerStub.TOKEN;
 @TestInstance(PER_CLASS)
 class TicktokTest {
 
-    private final Ticktok ticktok = new Ticktok(Ticktok.options().domain(DOMAIN).token(TOKEN));
-    
+    private final Ticktok ticktok = new Ticktok(options().domain(DOMAIN).token(TOKEN));
+
     private ServerStub server;
 
     @BeforeEach
@@ -76,6 +77,14 @@ class TicktokTest {
     void tearDown() throws Exception {
         ticktok.disconnect();
         server.stop();
+    }
+
+
+    public static void main(String[] args) {
+        new Ticktok(options().domain("http://localhost:8080").token("1234"))
+                .schedule("Aloha", "every.2.seconds", () -> {
+                    System.out.println("tick");
+                });
     }
 
 }

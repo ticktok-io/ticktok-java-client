@@ -23,16 +23,21 @@ import java.util.TimerTask;
 public class HttpTickerPolicy implements TickerPolicy {
 
     public static final String URL_PARAM = "url";
+
     private final HttpClient httpClient = HttpClients.custom()
             .setRetryHandler(new DefaultHttpRequestRetryHandler(0, false))
             .build();
     private Timer timer;
 
     @Override
-    public TickConsumerInvoker createConsumer(TickChannel channel, TickConsumer consumer) {
+    public TickConsumerInvoker createConsumer(TickChannel channel) {
         createTimerIfNeeded();
-        String url = channel.getDetails().get(URL_PARAM);
-        final HttpTickConsumerInvoker tickConsumerInvoker = new HttpTickConsumerInvoker(url, consumer);
+        return createScheduledInvokerFor(channel);
+    }
+
+    private TickConsumerInvoker createScheduledInvokerFor(TickChannel channel) {
+        final HttpTickConsumerInvoker tickConsumerInvoker = new HttpTickConsumerInvoker(
+                channel.getDetails().get(URL_PARAM));
         timer.scheduleAtFixedRate(tickConsumerInvoker, 0L, 1000L);
         return tickConsumerInvoker;
     }
@@ -62,8 +67,7 @@ public class HttpTickerPolicy implements TickerPolicy {
         private TickConsumer tickConsumer;
         private final String url;
 
-        public HttpTickConsumerInvoker(String url, TickConsumer tickConsumer) {
-            this.tickConsumer = tickConsumer;
+        public HttpTickConsumerInvoker(String url) {
             this.url = url;
         }
 
