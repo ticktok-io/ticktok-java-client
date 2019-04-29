@@ -110,6 +110,10 @@ public class HttpTickerPolicyTest {
         register("c1", countForOriginal::countDown);
         register("c1", countForNew::countDown);
         server.tickOn("c1");
+        assertOnlyNewClockConsumerGotTicked(countForOriginal, countForNew);
+    }
+
+    private void assertOnlyNewClockConsumerGotTicked(CountDownLatch countForOriginal, CountDownLatch countForNew) {
         assertTimeoutPreemptively(ofSeconds(1), (Executable) countForNew::await);
         assertThat("original consumer should not get ticks", countForOriginal.getCount(), is(1L));
     }
