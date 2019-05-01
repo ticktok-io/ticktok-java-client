@@ -1,5 +1,6 @@
 package io.ticktok.client.server;
 
+import io.ticktok.client.tick.TickChannel;
 import lombok.*;
 
 @Builder
@@ -15,16 +16,5 @@ public class Clock {
     private String schedule;
     private String url;
     private String name;
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @Builder
-    @EqualsAndHashCode
-    @ToString
-    public static class TickChannel {
-        private String queue;
-        private String uri;
-    }
 
 }

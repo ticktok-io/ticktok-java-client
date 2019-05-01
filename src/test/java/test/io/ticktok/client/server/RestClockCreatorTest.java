@@ -4,7 +4,7 @@ import io.ticktok.client.Ticktok;
 import io.ticktok.client.server.ClockRequest;
 import io.ticktok.client.server.ConnectionException;
 import io.ticktok.client.server.FailToCreateClockException;
-import io.ticktok.client.server.RestClockCreator;
+import io.ticktok.client.server.rest.RestClockCreator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.rockm.blink.BlinkServer;

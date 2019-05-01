@@ -1,11 +1,13 @@
 package test.io.ticktok.client.support;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.ticktok.client.server.Clock;
 import io.ticktok.client.server.ClockRequest;
+import io.ticktok.client.tick.TickChannel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.rockm.blink.BlinkServer;
@@ -13,13 +15,16 @@ import org.rockm.blink.BlinkServer;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import static io.ticktok.client.tick.rabbit.RabbitTickerPolicy.QUEUE_PARAM;
+import static io.ticktok.client.tick.rabbit.RabbitTickerPolicy.URI_PARAM;
+import static io.ticktok.client.tick.TickListener.RABBIT;
+
 public class ServerStub {
 
     public static final String DOMAIN = "http://localhost:9999";
     public static final String TOKEN = "my_access_token";
     public static final String CLOCK_ID = "123";
     private static final String INVALID_SCHEDULE = "invalid";
-    private static final String QUEUE = "java-client-queue-test";
 
     public ClockRequest lastClockRequest;
     private final BlinkServer app;
@@ -28,28 +33,34 @@ public class ServerStub {
     private Channel channel;
 
 
-    public ServerStub(int port, boolean validResponse) throws Exception {
-        createQueue();
+    public ServerStub(int port) throws Exception {
+        createConnection();
         app = new BlinkServer(port) {{
             post("/api/v1/clocks", (req, res) -> {
-                lastClockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
+                ClockRequest clockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
                 try {
                     validateToken(req.param("access_token"));
-                    validateSchedule(lastClockRequest.getSchedule());
+                    validateSchedule(clockRequest.getSchedule());
                 } catch(StatusCodeException e) {
                     res.status(e.getStatus());
                     return "";
                 }
+                final Clock clock = clockFrom(clockRequest);
+                try {
+                    channel.queueDeclare(clock.getChannel().getDetails().get(QUEUE_PARAM), false, false, true, null);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to create queue", e);
+                }
+                lastClockRequest = clockRequest;
                 res.status(201);
-                return createClockFrom(clockRequestFrom(req.body()));
+                return new Gson().toJson(clock);
             });
         }};
     }
 
-    private void createQueue() throws TimeoutException, IOException {
+    private void createConnection() throws TimeoutException, IOException {
         connection = new ConnectionFactory().newConnection();
         channel = connection.createChannel();
-        channel.queueDeclare(QUEUE, false, false, false, null);
     }
 
     private void validateToken(String token) {
@@ -60,22 +71,21 @@ public class ServerStub {
         if(INVALID_SCHEDULE.equals(schedule)) throw new StatusCodeException(400);
     }
 
-    private String createClockFrom(ClockRequest request) {
-        return new Gson().toJson(Clock.builder().
+    private Clock clockFrom(ClockRequest request) {
+        return Clock.builder().
                 id(CLOCK_ID).
                 name(request.getName()).
                 schedule(request.getSchedule()).
                 url(DOMAIN + "/api/v1/clocks/" + CLOCK_ID).
-                channel(Clock.TickChannel.builder().queue(QUEUE).uri("amqp://localhost:5672").build()).
-                build());
+                channel(TickChannel.builder()
+                        .type(RABBIT)
+                        .details(ImmutableMap.of(URI_PARAM, "amqp://localhost:5672", QUEUE_PARAM, request.getName()))
+                        .build()).
+                build();
     }
 
-    private ClockRequest clockRequestFrom(String body) {
-        return new Gson().fromJson(body, ClockRequest.class);
-    }
-
-    public void tick() throws IOException {
-        channel.basicPublish("", QUEUE, null, "tick".getBytes());
+    public void tick(String name) throws IOException {
+        channel.basicPublish("", name, null, "tick".getBytes());
     }
 
     public void stop() throws IOException, TimeoutException {

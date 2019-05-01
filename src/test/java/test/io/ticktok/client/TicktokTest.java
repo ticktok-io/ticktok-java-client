@@ -10,8 +10,10 @@ import org.junit.jupiter.api.function.Executable;
 import test.io.ticktok.client.support.ServerStub;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.ticktok.client.Ticktok.options;
+import static java.lang.Thread.sleep;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -24,15 +26,13 @@ import static test.io.ticktok.client.support.ServerStub.TOKEN;
 @TestInstance(PER_CLASS)
 class TicktokTest {
 
-    private static final String SCHEDULE = "every.1.seconds";
-    public static final String NAME = "my_clock";
+    private final Ticktok ticktok = new Ticktok(options().domain(DOMAIN).token(TOKEN));
 
-    private final Ticktok ticktok = new Ticktok(Ticktok.options().domain(DOMAIN).token(TOKEN));
     private ServerStub server;
 
     @BeforeEach
     void init() throws Exception {
-        server = new ServerStub(9999, true);
+        server = new ServerStub(9999);
     }
 
     @Test
@@ -49,32 +49,42 @@ class TicktokTest {
 
     @Test
     void invokeOnTick() throws Exception {
-        CountDownLatch waitForTickLatch = new CountDownLatch(1);
-        ticktok.schedule(NAME, SCHEDULE, waitForTickLatch::countDown);
+        CountDownLatch waitForTickLatch = new CountDownLatch(2);
+        ticktok.schedule("kuku", "every.2.seconds", waitForTickLatch::countDown);
+        ticktok.schedule("popo", "every.1.minute", waitForTickLatch::countDown);
         verifyCallbackWasntDoneSynchronicity(waitForTickLatch);
-        server.tick();
+        server.tick("kuku");
+        server.tick("popo");
         assertTimeoutPreemptively(ofSeconds(3), (Executable) waitForTickLatch::await);
         // pass
     }
 
     private void verifyCallbackWasntDoneSynchronicity(CountDownLatch countDownLatch) {
-        assert countDownLatch.getCount() == 1;
+        assert countDownLatch.getCount() == 2;
     }
 
     @Test
     void disconnectClocks() throws Exception {
-        CountDownLatch waitForTickLatch = new CountDownLatch(1);
-        ticktok.schedule(NAME, SCHEDULE, waitForTickLatch::countDown);
+        AtomicInteger tickCount = new AtomicInteger();
+        ticktok.schedule("ct-disconnect", "every.1.seconds", tickCount::incrementAndGet);
         ticktok.disconnect();
-        server.tick();
-        waitForTickLatch.await(3, TimeUnit.SECONDS);
-        assertThat("Disconnected clock got ticked", waitForTickLatch.getCount(), is(1L));
+        server.tick("ct-disconnect");
+        sleep(1000);
+        assertThat("Disconnected clock got ticked", tickCount.get(), is(0));
     }
 
     @AfterEach
     void tearDown() throws Exception {
         ticktok.disconnect();
         server.stop();
+    }
+
+
+    public static void main(String[] args) {
+        new Ticktok(options().domain("http://localhost:8080").token("1234"))
+                .schedule("Aloha", "every.2.seconds", () -> {
+                    System.out.println("tick");
+                });
     }
 
 }
