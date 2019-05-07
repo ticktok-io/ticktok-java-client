@@ -1,51 +1,38 @@
 package test.io.ticktok.client.server;
 
-import io.ticktok.client.Ticktok;
-import io.ticktok.client.server.ClockRequest;
-import io.ticktok.client.server.ConnectionException;
+import io.ticktok.client.server.Clock;
 import io.ticktok.client.server.FailToCreateClockException;
-import io.ticktok.client.server.rest.RestClockCreator;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rockm.blink.BlinkServer;
+import test.io.ticktok.client.server.support.TicktokServer;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+class RestClockCreatorTest extends ClockCreatorTest {
 
-class RestClockCreatorTest {
+    private TicktokServer server;
 
-    public static final int PORT = 1212;
-    private BlinkServer server;
-
-    @Test
-    void failOnServiceNotAvailable() {
-        assertThrows(ConnectionException.class, () -> createClockWithSchedule("every.5.seconds"));
-    }
-
-    private void createClockWithSchedule(String schedule) {
-        new RestClockCreator(Ticktok.options().domain("http://localhost:" + PORT).token("my_token"))
-                .create(new ClockRequest("my-pupu-clock", schedule));
+    @BeforeEach
+    void setup(){
+        server = new TicktokServer();
     }
 
     @Test
-    void failOnBadRequest() throws IOException {
-        badRequestServer();
-        assertThrows(FailToCreateClockException.class, () -> createClockWithSchedule("-"));
+    void failOnBadRequest() {
+        server.returnBadRequest();
+        assertThrows(FailToCreateClockException.class, () -> createClockWith("my-pupu-clock","-"));
     }
 
-    private void badRequestServer() throws IOException {
-        server = new BlinkServer(PORT) {{
-            post("/api/v1/clocks", (req, res) -> {
-                res.status(400);
-                return "";
-            });
-        }};
+    @Test
+    void fireSingleTick() {
+        Clock clock = createClockWith("my-clock", "@never");
+        tick(clock);
+        assertEquals(clock.getId(), server.tickFor());
     }
 
     @AfterEach
     void tearDown() {
-        if (server != null)
-            server.stop();
+        server.kill();
     }
 }
