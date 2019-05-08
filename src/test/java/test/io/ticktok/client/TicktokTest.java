@@ -79,7 +79,7 @@ class TicktokTest {
         server.stop();
     }
 
-
+    //TODO: remove
     public static void main(String[] args) {
         new Ticktok(options().domain("http://localhost:8080").token("1234"))
                 .schedule("Aloha", "every.2.seconds", () -> {

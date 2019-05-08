@@ -24,6 +24,7 @@ public class UrlResolver {
         return !domain.substring(domain.length() - 1).equals("/");
     }
 
+    //TODO: I think UriBuilder will do it for you
     public String resolve() {
         StringBuilder url = resolved.append("?").append("access_token=").append(this.options.getToken());
         qParams.forEach((k, v) -> url.append("&").append(k).append("=").append(v));

@@ -5,7 +5,8 @@ import io.ticktok.client.server.Clock;
 import io.ticktok.client.server.ClockRequest;
 import io.ticktok.client.server.rest.RestClockCreator;
 
-public class    ClockCreatorTest {
+//TODO: seems like it should be abstract and, the name should apply this is a base class
+public class ClockCreatorTest {
 
     private static final String DOMAIN = "http://localhost:" + 1212;
     private static final String TOKEN = "my_token";

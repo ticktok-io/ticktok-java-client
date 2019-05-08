@@ -41,6 +41,8 @@ public class RestClockCreator {
         }
     }
 
+    //TODO: this isn't belong herem this class is all about creating a new clock
+    // maybe you can create a ClockActionInvoker or something
     public void tick(ClockRequest clockRequest) {
         try {
             Clock clockBy = getClockBy(clockRequest);
@@ -59,14 +61,18 @@ public class RestClockCreator {
             validateResponse(httpResponse, GET);
             return clockFrom(httpResponse.getEntity());
         } catch (IOException e) {
+            //TODO: this is internal so no need for this catch clause
             throw new ConnectionException("Connection error", e);
         }
     }
 
+    //TODO: this should be validate and be thrown specifically I think, no need for general here, not sure
+    // even so it's better to have a map or factory than switch
     private void validateResponse(HttpResponse httpResponse, TicktokMethods expectedMethod) throws IOException {
         switch (expectedMethod){
             case CREATE:
                 if(validateStatusCode(httpResponse, expectedMethod))
+                    //TODO: you must always pass the original exception otherwise it's very hard to understand the cause
                     throw new FailToCreateClockException(EntityUtils.toString(httpResponse.getEntity()));
             case GET:
                 if (validateStatusCode(httpResponse, expectedMethod))
