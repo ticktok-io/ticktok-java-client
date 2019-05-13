@@ -31,7 +31,7 @@ public class ServerStub {
 
     private Connection connection;
     private Channel channel;
-
+    private String latestTick;
 
     public ServerStub(int port) throws Exception {
         createConnection();
@@ -55,6 +55,22 @@ public class ServerStub {
                 res.status(201);
                 return new Gson().toJson(clock);
             });
+
+            put("/api/v1/clocks/{id}/tick", (req, res) -> {
+                res.status(204);
+                latestTick = req.pathParam("id");
+                return "";
+            });
+
+            get("/api/v1/clocks", (req, res) -> {
+                res.status(200);
+                ClockRequest clockRequest = new Gson().fromJson(req.body(), ClockRequest.class);
+                if(clockRequest != null)
+                    return new Gson().toJson(clockFrom(clockRequest));
+                else
+                    return new Gson().toJson(clockFrom(new ClockRequest(req.param("name"), req.param("schedule"))));
+            });
+
         }};
     }
 
@@ -92,6 +108,10 @@ public class ServerStub {
         app.stop();
         channel.close();
         connection.close();
+    }
+
+    public String latestTick() {
+        return latestTick;
     }
 
     @Getter

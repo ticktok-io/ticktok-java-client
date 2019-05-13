@@ -3,10 +3,10 @@ package test.io.ticktok.client.server;
 import io.ticktok.client.Ticktok;
 import io.ticktok.client.server.Clock;
 import io.ticktok.client.server.ClockRequest;
+import io.ticktok.client.server.rest.RestClockActions;
 import io.ticktok.client.server.rest.RestClockCreator;
 
-//TODO: seems like it should be abstract and, the name should apply this is a base class
-public class ClockCreatorTest {
+public abstract class ClockActionBaseTest {
 
     private static final String DOMAIN = "http://localhost:" + 1212;
     private static final String TOKEN = "my_token";
@@ -21,7 +21,7 @@ public class ClockCreatorTest {
     }
 
     void tick(Clock clock) {
-        new RestClockCreator(Ticktok.options().domain(DOMAIN).token(TOKEN)).
+        new RestClockActions(Ticktok.options().domain(DOMAIN).token(TOKEN)).
                 tick(clockRequest(clock.getName(), clock.getSchedule()));
     }
 }

@@ -9,7 +9,7 @@ import test.io.ticktok.client.server.support.TicktokServer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RestClockCreatorTest extends ClockCreatorTest {
+class RestClockActionBaseTest extends ClockActionBaseTest {
 
     private TicktokServer server;
 
@@ -28,7 +28,7 @@ class RestClockCreatorTest extends ClockCreatorTest {
     void fireSingleTick() {
         Clock clock = createClockWith("my-clock", "@never");
         tick(clock);
-        assertEquals(clock.getId(), server.tickFor());
+        assertEquals(clock.getId(), server.latestTick());
     }
 
     @AfterEach

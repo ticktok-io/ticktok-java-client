@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class RestClockCreator_TicktokNotReachable extends ClockCreatorTest {
+public class RestClockActionBase_TicktokNotReachable extends ClockActionBaseTest {
 
     @Test
     void failOnServiceNotAvailable() {

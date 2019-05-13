@@ -54,8 +54,7 @@ public class TicktokServer {
         this.badResponse = true;
     }
 
-    //TODO: tick for what?
-    public String tickFor() {
+    public String latestTick() {
         return latestTick;
     }
 

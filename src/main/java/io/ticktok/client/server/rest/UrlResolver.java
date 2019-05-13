@@ -1,14 +1,23 @@
 package io.ticktok.client.server.rest;
 
+import io.ticktok.client.TicktokException;
 import io.ticktok.client.TicktokOptions;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UrlResolver {
 
     public static final String CLOCK_ROOT = "api/v1/clocks";
     private StringBuilder resolved = new StringBuilder();
-    private Map<String, String> qParams = new LinkedHashMap<>();
+    private List<NameValuePair> qParams = new ArrayList<>();
     private TicktokOptions options;
 
     public UrlResolver(TicktokOptions options){
@@ -24,21 +33,37 @@ public class UrlResolver {
         return !domain.substring(domain.length() - 1).equals("/");
     }
 
-    //TODO: I think UriBuilder will do it for you
     public String resolve() {
-        StringBuilder url = resolved.append("?").append("access_token=").append(this.options.getToken());
-        qParams.forEach((k, v) -> url.append("&").append(k).append("=").append(v));
-        String result = url.toString();
+        String result = buildUri();
+        result = decodeUri(result);
         resetQparams();
-        resetResolved();
+        resetResolver();
         return result;
     }
 
-    private void resetQparams() {
-        qParams = new LinkedHashMap<>();
+    private String decodeUri(String result) {
+        try {
+            return URLDecoder.decode(result, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new TicktokException("Fail to decode uri, root cause: " + e);
+        }
     }
 
-    private void resetResolved() {
+    private String buildUri() {
+        try {
+            return new URIBuilder(resolved.toString()).
+                        setParameters(qParams).
+                        setParameter("access_token", options.getToken()).build().toString();
+        } catch (URISyntaxException e) {
+            throw new TicktokException("URI is invalid, root cause: " + e);
+        }
+    }
+
+    private void resetQparams() {
+        qParams = new ArrayList<>();
+    }
+
+    private void resetResolver() {
         resolved = new StringBuilder();
         bootstrapResolver();
     }
@@ -49,7 +74,7 @@ public class UrlResolver {
     }
 
     public UrlResolver queryParam(String key, String value) {
-        qParams.put(key, value);
+        qParams.add(new BasicNameValuePair(key, value));
         return this;
     }
 }
