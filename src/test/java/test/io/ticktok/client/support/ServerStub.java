@@ -114,6 +114,10 @@ public class ServerStub {
         return latestTick;
     }
 
+    public void gotTickedFor(String name, String schedule) {
+
+    }
+
     @Getter
     @AllArgsConstructor
     private class StatusCodeException extends RuntimeException {

@@ -13,6 +13,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
+//TODO: where are the tests?
 public class RestClockActions {
 
     private final HttpClient httpClient = HttpClients.custom()
@@ -34,6 +35,8 @@ public class RestClockActions {
         }
     }
 
+    //TODO: here you validating after you got the body, this will fail in real life
+    // your tests should reflect that
     private Clock getClockBy(ClockRequest clockRequest) throws IOException {
         final HttpGet httpGet = new HttpGet(urlResolver.queryParam("name", clockRequest.getName()).queryParam("schedule", clockRequest.getSchedule()).resolve());
         HttpResponse httpResponse = httpClient.execute(httpGet);

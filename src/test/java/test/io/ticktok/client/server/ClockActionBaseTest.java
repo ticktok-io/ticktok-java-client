@@ -6,6 +6,7 @@ import io.ticktok.client.server.ClockRequest;
 import io.ticktok.client.server.rest.RestClockActions;
 import io.ticktok.client.server.rest.RestClockCreator;
 
+//TODO: too many specific things here
 public abstract class ClockActionBaseTest {
 
     private static final String DOMAIN = "http://localhost:" + 1212;
