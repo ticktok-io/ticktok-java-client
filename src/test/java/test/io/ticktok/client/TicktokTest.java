@@ -81,13 +81,6 @@ class TicktokTest {
         server.gotTickedFor("lala", "every.111.minutes");
     }
 
-    //    @Test
-//    void tickOnClock() {
-//        ticktok.schedule("popo", "every.2.seconds", () -> System.out.println("tick happened!"));
-//        ticktok.tick("popo", "every.2.seconds");
-//        assertTrue(server.latestTick().equals(""));
-//    }
-
     @AfterEach
     void tearDown() throws Exception {
         ticktok.disconnect();
