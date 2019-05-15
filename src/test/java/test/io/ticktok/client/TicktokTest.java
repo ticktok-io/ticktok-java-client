@@ -74,7 +74,6 @@ class TicktokTest {
         assertThat("Disconnected clock got ticked", tickCount.get(), is(0));
     }
 
-    //TODO: here's your test
     @Test
     void tickOnSpecificClock() {
         ticktok.tick("lala", "every.111.minutes");

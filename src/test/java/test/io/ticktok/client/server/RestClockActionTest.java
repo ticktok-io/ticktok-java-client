@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.io.ticktok.client.server.support.TicktokServer;
 
+import static io.ticktok.client.Ticktok.options;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -32,7 +33,7 @@ class RestClockActionTest {
     }
 
     private Clock createClockWith(String name, String schedule) {
-        return new RestClockCreator(Ticktok.options().domain(DOMAIN).token(TOKEN))
+        return new RestClockCreator(options().domain(DOMAIN).token(TOKEN))
                 .create(clockRequest(name, schedule));
     }
 
@@ -44,7 +45,7 @@ class RestClockActionTest {
     }
 
     private void tick(Clock clock) {
-        new RestClockActions(Ticktok.options().domain(DOMAIN).token(TOKEN)).
+        new RestClockActions(options().domain(DOMAIN).token(TOKEN)).
                 tick(clockRequest(clock.getName(), clock.getSchedule()));
     }
 

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class RestClockCreatorTest_TicktokNotReachable {
+class RestClockCreatorTest_TicktokNotReachable {
 
     private static final String DOMAIN = "http://localhost:" + 1212;
     private static final String TOKEN = "my_token";
