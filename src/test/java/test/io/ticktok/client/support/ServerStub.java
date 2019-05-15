@@ -68,7 +68,7 @@ public class ServerStub {
                 if (clockTick.get(id) != null) {
                     clockTick.put(id, true);
                 }
-                return "";
+                return null;
             });
 
             get("/api/v1/clocks", (req, res) -> {

@@ -13,14 +13,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UrlResolver {
+public class ClocksUrlResolver {
 
     public static final String CLOCK_ROOT = "api/v1/clocks";
     private StringBuilder resolved = new StringBuilder();
     private List<NameValuePair> qParams = new ArrayList<>();
     private TicktokOptions options;
 
-    public UrlResolver(TicktokOptions options){
+    public ClocksUrlResolver(TicktokOptions options){
         this.options = options;
         bootstrapResolver();
     }
@@ -68,12 +68,12 @@ public class UrlResolver {
         bootstrapResolver();
     }
 
-    public UrlResolver pathParam(String s) {
+    public ClocksUrlResolver pathParam(String s) {
         resolved.append("/").append(s);
         return this;
     }
 
-    public UrlResolver queryParam(String key, String value) {
+    public ClocksUrlResolver queryParam(String key, String value) {
         qParams.add(new BasicNameValuePair(key, value));
         return this;
     }

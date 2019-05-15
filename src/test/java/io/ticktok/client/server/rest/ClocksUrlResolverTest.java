@@ -7,25 +7,25 @@ import org.junit.jupiter.api.Test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertThrows;
 
-public class UrlResolverTest {
+public class ClocksUrlResolverTest {
 
     private final TicktokOptions options = new TicktokOptions().domain("http://localhost:9999/my.ticktok/").token("my_token");
 
     @Test
     void resolveDefault(){
-        String url = new UrlResolver(options).resolve();
+        String url = new ClocksUrlResolver(options).resolve();
         assertEquals("http://localhost:9999/my.ticktok/api/v1/clocks?access_token=my_token", url);
     }
 
     @Test
     void resolveWithPathParam(){
-        String url = new UrlResolver(options).pathParam("123").resolve();
+        String url = new ClocksUrlResolver(options).pathParam("123").resolve();
         assertEquals("http://localhost:9999/my.ticktok/api/v1/clocks/123?access_token=my_token", url);
     }
 
     @Test
     void resolveWithMultiPathParam(){
-        String url = new UrlResolver(options).
+        String url = new ClocksUrlResolver(options).
                 pathParam("123").
                 pathParam("name").
                 pathParam("clock").
@@ -35,14 +35,14 @@ public class UrlResolverTest {
 
     @Test
     void resolveWithQueryParam(){
-        String url = new UrlResolver(options).
+        String url = new ClocksUrlResolver(options).
                 queryParam("name", "my_clock").resolve();
         assertEquals("http://localhost:9999/my.ticktok/api/v1/clocks?name=my_clock&access_token=my_token", url);
     }
 
     @Test
     void resolveMultiQueryParam(){
-        String url = new UrlResolver(options).
+        String url = new ClocksUrlResolver(options).
                 queryParam("name", "my_clock").
                 queryParam("schedule", "@never").
                 queryParam("id", "my_id").
@@ -52,7 +52,7 @@ public class UrlResolverTest {
 
     @Test
     void resolveWithMixedParamTypes(){
-        String url = new UrlResolver(options).
+        String url = new ClocksUrlResolver(options).
                 queryParam("name", "my_clock").
                 pathParam("1234").
                 queryParam("id", "my_id").
@@ -62,7 +62,7 @@ public class UrlResolverTest {
 
     @Test
     void noStateSaved(){
-        UrlResolver urlResolver = new UrlResolver(options);
+        ClocksUrlResolver urlResolver = new ClocksUrlResolver(options);
         String url = urlResolver.pathParam("1234").resolve();
         assertEquals("http://localhost:9999/my.ticktok/api/v1/clocks/1234?access_token=my_token", url);
         url = urlResolver.queryParam("id", "1234").resolve();
@@ -71,6 +71,6 @@ public class UrlResolverTest {
 
     @Test
     void failGivenInvalidUri(){
-        assertThrows(TicktokException.class, () -> new UrlResolver(new TicktokOptions().domain("%2010%-20%%2004-03-07")).resolve());
+        assertThrows(TicktokException.class, () -> new ClocksUrlResolver(new TicktokOptions().domain("%2010%-20%%2004-03-07")).resolve());
     }
 }

@@ -21,10 +21,10 @@ public class RestClockCreator {
 
     private final HttpClient httpClient = HttpClients.custom()
             .setRetryHandler(new StandardHttpRequestRetryHandler()).build();
-    private final UrlResolver urlResolver;
+    private final ClocksUrlResolver urlResolver;
 
     public RestClockCreator(TicktokOptions options) {
-        this.urlResolver = new UrlResolver(options);
+        this.urlResolver = new ClocksUrlResolver(options);
     }
 
     public Clock create(ClockRequest clockRequest) {

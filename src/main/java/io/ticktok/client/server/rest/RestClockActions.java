@@ -17,10 +17,10 @@ public class RestClockActions {
 
     private final HttpClient httpClient = HttpClients.custom()
             .setRetryHandler(new StandardHttpRequestRetryHandler()).build();
-    private final UrlResolver urlResolver;
+    private final ClocksUrlResolver urlResolver;
 
     public RestClockActions(TicktokOptions options) {
-        this.urlResolver = new UrlResolver(options);
+        this.urlResolver = new ClocksUrlResolver(options);
     }
 
     public void tick(ClockRequest clockRequest) {
@@ -38,7 +38,7 @@ public class RestClockActions {
         final HttpGet httpGet = new HttpGet(urlResolver.queryParam("name", clockRequest.getName()).queryParam("schedule", clockRequest.getSchedule()).resolve());
         HttpResponse httpResponse = httpClient.execute(httpGet);
         String entity = extractEntityFrom(httpResponse);
-        new RestResponseValidator(httpResponse).validate(200, new FailToGetClockException(entity));
+        new RestResponseValidator(httpResponse).validate(200, new ClockNotFoundException(entity));
         return clockFrom(entity);
     }
 
