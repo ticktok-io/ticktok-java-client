@@ -1,6 +1,5 @@
-package test.io.ticktok.client.server;
+package test.io.ticktok.client.server.rest;
 
-import io.ticktok.client.Ticktok;
 import io.ticktok.client.server.ClockRequest;
 import io.ticktok.client.server.ConnectionException;
 import io.ticktok.client.server.FailToCreateClockException;
@@ -11,41 +10,41 @@ import org.rockm.blink.BlinkServer;
 
 import java.io.IOException;
 
+import static io.ticktok.client.Ticktok.options;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RestClockCreatorTest {
 
-    public static final int PORT = 1212;
+    public static final int PORT = 9191;
+    private static final String DOMAIN = "http://localhost:" + PORT;
+
     private BlinkServer server;
 
     @Test
-    void failOnServiceNotAvailable() {
-        assertThrows(ConnectionException.class, () -> createClockWithSchedule("every.5.seconds"));
-    }
-
-    private void createClockWithSchedule(String schedule) {
-        new RestClockCreator(Ticktok.options().domain("http://localhost:" + PORT).token("my_token"))
-                .create(new ClockRequest("my-pupu-clock", schedule));
-    }
-
-    @Test
     void failOnBadRequest() throws IOException {
-        badRequestServer();
-        assertThrows(FailToCreateClockException.class, () -> createClockWithSchedule("-"));
-    }
-
-    private void badRequestServer() throws IOException {
         server = new BlinkServer(PORT) {{
             post("/api/v1/clocks", (req, res) -> {
                 res.status(400);
                 return "";
             });
         }};
+        assertThrows(FailToCreateClockException.class, this::createClock);
+    }
+
+    private void createClock() {
+        new RestClockCreator(options().domain(DOMAIN).token("my_token"))
+                .create(new ClockRequest("my-pupu-clock", "every.5.seconds"));
+    }
+
+    @Test
+    void failOnServiceNotAvailable() {
+        assertThrows(ConnectionException.class, this::createClock);
     }
 
     @AfterEach
     void tearDown() {
-        if (server != null)
+        if(server != null) {
             server.stop();
+        }
     }
 }

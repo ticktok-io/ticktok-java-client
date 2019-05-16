@@ -17,6 +17,7 @@ import static java.lang.Thread.sleep;
 import static java.time.Duration.ofSeconds;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -73,18 +74,15 @@ class TicktokTest {
         assertThat("Disconnected clock got ticked", tickCount.get(), is(0));
     }
 
+    @Test
+    void tickOnSpecificClock() {
+        ticktok.tick("lala", "every.111.minutes");
+        server.gotTickedFor("lala", "every.111.minutes");
+    }
+
     @AfterEach
     void tearDown() throws Exception {
         ticktok.disconnect();
         server.stop();
     }
-
-
-    public static void main(String[] args) {
-        new Ticktok(options().domain("http://localhost:8080").token("1234"))
-                .schedule("Aloha", "every.2.seconds", () -> {
-                    System.out.println("tick");
-                });
-    }
-
 }
