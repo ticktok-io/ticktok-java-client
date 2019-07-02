@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.rockm.blink.BlinkServer;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -74,9 +75,8 @@ public class ServerStub {
             get("/api/v1/clocks", (req, res) -> {
                 final Clock clock = clockFrom(new ClockRequest(req.param("name"), req.param("schedule")));
                 clockTick.put(clock.getId(), false);
-                return new Gson().toJson(clock);
+                return new Gson().toJson(Arrays.asList(clock));
             });
-
         }};
     }
 
