@@ -41,7 +41,10 @@ public class RestClockActions {
     private Clock getClockBy(ClockRequest clockRequest) throws IOException {
         final HttpGet httpGet = new HttpGet(urlResolver.queryParam("name", clockRequest.getName()).queryParam("schedule", clockRequest.getSchedule()).resolve());
         HttpResponse httpResponse = httpClient.execute(httpGet);
-        String entity = extractEntityFrom(httpResponse);
+        return getFirstClockFrom(extractEntityFrom(httpResponse), clockRequest);
+    }
+
+    private Clock getFirstClockFrom(String entity, ClockRequest clockRequest) {
         final List<Clock> clocks = new Gson().fromJson(entity, new TypeToken<List<Clock>>() {}.getType());
         if(clocks.isEmpty()) {
             throw new ClockNotFoundException(format(
@@ -56,7 +59,4 @@ public class RestClockActions {
         return EntityUtils.toString(httpResponse.getEntity());
     }
 
-    private Clock clockFrom(String entity) {
-        return new Gson().fromJson(entity, Clock.class);
-    }
 }
