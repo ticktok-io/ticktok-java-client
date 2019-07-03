@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
   ...
-    compile 'io.ticktok:ticktok-java-client:0.4.4'
+    compile 'io.ticktok:ticktok-java-client:0.4.5'
 }
 ```
 
@@ -42,7 +42,7 @@ dependencies {
     <dependency>
         <groupId>io.ticktok</groupId>
         <artifactId>ticktok-java-client</artifactId>
-        <version>0.4.4</version>
+        <version>0.4.5</version>
     </dependency>
 </dependencies>
 
