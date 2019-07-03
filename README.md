@@ -55,6 +55,11 @@ new Ticktok(options().domain("<ticktok-domain>").token("<ticktok-token>")).
         System.out.print("tick me baby one more time");
     });
 ```
+```java
+new Ticktok(options().domain("<ticktok-domain>").token("<ticktok-token>")).
+    tick("my first clock", "every.5.seconds");
+```
+
 
 ## Community
 Come & chat with us on [Slack](https://ticktokio.slack.com/messages/CF0DYKN0Y/details/)
