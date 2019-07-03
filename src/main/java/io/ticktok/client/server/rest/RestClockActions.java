@@ -1,6 +1,7 @@
 package io.ticktok.client.server.rest;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.ticktok.client.TicktokOptions;
 import io.ticktok.client.server.*;
 import org.apache.http.HttpResponse;
@@ -12,6 +13,9 @@ import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.List;
+
+import static java.lang.String.format;
 
 public class RestClockActions {
 
@@ -37,16 +41,20 @@ public class RestClockActions {
     private Clock getClockBy(ClockRequest clockRequest) throws IOException {
         final HttpGet httpGet = new HttpGet(urlResolver.queryParam("name", clockRequest.getName()).queryParam("schedule", clockRequest.getSchedule()).resolve());
         HttpResponse httpResponse = httpClient.execute(httpGet);
-        String entity = extractEntityFrom(httpResponse);
-        new RestResponseValidator(httpResponse).validate(200, new ClockNotFoundException(entity));
-        return clockFrom(entity);
+        return firstClockFrom(extractEntityFrom(httpResponse), clockRequest.getName(), clockRequest.getSchedule());
+    }
+
+    private Clock firstClockFrom(String entity, String name, String schedule) {
+        final List<Clock> clocks = new Gson().fromJson(entity, new TypeToken<List<Clock>>() {}.getType());
+        if (clocks.isEmpty()) {
+            throw new ClockNotFoundException(format(
+                    "Clock named: %s, schedule: %s isn't currently configured", name, schedule));
+        }
+        return clocks.get(0);
     }
 
     private String extractEntityFrom(HttpResponse httpResponse) throws IOException {
         return EntityUtils.toString(httpResponse.getEntity());
     }
 
-    private Clock clockFrom(String entity) {
-        return new Gson().fromJson(entity, Clock.class);
-    }
 }

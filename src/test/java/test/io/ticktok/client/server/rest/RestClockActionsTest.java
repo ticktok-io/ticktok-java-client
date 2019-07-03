@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.rockm.blink.BlinkServer;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static io.ticktok.client.Ticktok.options;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +38,7 @@ class RestClockActionsTest {
                 get("/api/v1/clocks", (req, res) -> {
                     if (req.param("name").equals(CLOCK_REQUEST.getName()) &&
                             req.param("schedule").equals(CLOCK_REQUEST.getSchedule())) {
-                        res.status(404);
+                        return new Gson().toJson(Arrays.asList());
                     }
                     return "";
                 });
@@ -49,7 +50,7 @@ class RestClockActionsTest {
     @Test
     void failOnFailureToTick() throws IOException {
         server = new BlinkServer(PORT) {{
-                get("/api/v1/clocks", (req, res) -> new Gson().toJson(Clock.builder().id("123")));
+                get("/api/v1/clocks", (req, res) -> new Gson().toJson(Arrays.asList(Clock.builder().id("123"))));
                 put("/api/v1/clocks/123/tick", (req, res) -> {
                     res.status(500);
                     return "";
