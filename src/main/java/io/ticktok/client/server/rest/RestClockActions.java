@@ -8,6 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.util.EntityUtils;
@@ -32,7 +33,8 @@ public class RestClockActions {
             Clock clockBy = getClockBy(clockRequest);
             final HttpPut httpPut = new HttpPut(urlResolver.pathParam(clockBy.getId()).pathParam("tick").resolve());
             HttpResponse httpResponse = httpClient.execute(httpPut);
-            new RestResponseValidator(httpResponse).validate(204, new FailToActOnClockException("Failed to tick clock" + clockRequest.toString()));
+            new RestResponseValidator(httpResponse).ok(
+                    new FailToActOnClockException("Failed to tick clock" + clockRequest.toString()));
         } catch (IOException e) {
             throw new ConnectionException("Connection error", e);
         }
