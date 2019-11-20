@@ -2,13 +2,13 @@ version: 2
 
 defaults: &defaults
   working_directory: ~/repo
-  docker:
-    - image: circleci/openjdk:8u181-jdk
-    - image: rabbitmq:3
 
 jobs:
   test:
     <<: *defaults
+    docker:
+      - image: circleci/openjdk:8u181-jdk
+      - image: rabbitmq:3
     steps:
       - checkout
 
@@ -43,6 +43,8 @@ jobs:
 
   publish:
     <<: *defaults
+    docker:
+      - image: circleci/openjdk:8u181-jdk
     steps:
       - attach_workspace:
           at: ~/repo

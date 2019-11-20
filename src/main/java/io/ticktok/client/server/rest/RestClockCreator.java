@@ -44,8 +44,8 @@ public class RestClockCreator {
         return EntityUtils.toString(httpResponse.getEntity());
     }
 
-    private void validateResponse(HttpResponse httpResponse, String entity) {
-        new RestResponseValidator(httpResponse).validate(201, new FailToCreateClockException(entity));
+    private void validateResponse(HttpResponse httpResponse, String entity) throws IOException {
+        new RestResponseValidator(httpResponse).created(new FailToCreateClockException(entity));
     }
 
     private Clock clockFrom(String entity){
